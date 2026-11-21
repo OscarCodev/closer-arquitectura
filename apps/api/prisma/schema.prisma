@@ -1,0 +1,126 @@
+// Modelo de datos de Closer (PostgreSQL).
+// Local: Postgres en Docker. Producción: Postgres administrado por Supabase.
+// La identidad la emite Supabase Auth; aquí `users.id` es el `sub` del JWT.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id          String   @id @db.Uuid
+  email       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at")
+
+  onboarding  OnboardingProfile?
+  profiles    ProspectProfile[]
+  sessions    PracticeSession[]
+  simulations Simulation[]
+  contacts    SupportContact[]
+
+  @@map("users")
+}
+
+/// Respuestas del onboarding del vendedor (una fila por usuario).
+model OnboardingProfile {
+  userId      String   @id @map("user_id") @db.Uuid
+  answers     Json
+  completedAt DateTime @default(now()) @map("completed_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_profiles")
+}
+
+/// Biblioteca de prospectos guardados por el vendedor.
+model ProspectProfile {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String   @db.VarChar(120)
+  personName  String?  @map("person_name") @db.VarChar(120)
+  roleCompany String?  @map("role_company") @db.VarChar(200)
+  prospect    String   @db.VarChar(1400)
+  context     String   @db.VarChar(1400)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt(sort: Desc)])
+  @@map("prospect_profiles")
+}
+
+/// Sesión de práctica: un escenario (prospecto + contexto) con uno o más intentos.
+model PracticeSession {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  name                String   @db.VarChar(120)
+  voiceName           String?  @map("voice_name") @db.VarChar(40)
+  prospect            String   @db.VarChar(1400)
+  context             String   @db.VarChar(1400)
+  prospectName        String?  @map("prospect_name") @db.VarChar(120)
+  prospectRole        String?  @map("prospect_role") @db.VarChar(120)
+  prospectCompany     String?  @map("prospect_company") @db.VarChar(120)
+  advancedSelections  Json     @default("{}") @map("advanced_selections")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  simulations Simulation[]
+
+  @@index([userId, updatedAt(sort: Desc)])
+  @@map("practice_sessions")
+}
+
+/// Estados de una simulación (ADR-006: evaluación idempotente).
+enum SimulationStatus {
+  IN_CALL
+  EVALUATING
+  COMPLETED
+  FAILED
+}
+
+/// Un intento (llamada) dentro de una sesión. El servidor calcula y guarda el puntaje.
+model Simulation {
+  id              String           @id @default(uuid()) @db.Uuid
+  sessionId       String           @map("session_id") @db.Uuid
+  userId          String           @map("user_id") @db.Uuid
+  status          SimulationStatus @default(IN_CALL)
+  score           Int?
+  durationSeconds Int?             @map("duration_seconds")
+  metrics         Json?
+  conversation    Json?
+  analysis        Json?
+  transcript      String?
+  failureReason   String?          @map("failure_reason") @db.VarChar(300)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  evaluatedAt     DateTime?        @map("evaluated_at")
+
+  session PracticeSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("simulations")
+}
+
+model SupportContact {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  subject   String   @db.VarChar(200)
+  message   String   @db.VarChar(5000)
+  pagePath  String?  @map("page_path") @db.VarChar(300)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("support_contacts")
+}

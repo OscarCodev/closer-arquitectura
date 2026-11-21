@@ -1,0 +1,47 @@
+# Closer
+
+Simulador de llamadas de venta con IA: el vendedor practica por voz con un prospecto simulado (Gemini Live) y recibe una evaluación por turno.
+
+Monorepo con dos aplicaciones:
+
+| Carpeta | Qué es | Tecnología |
+|---|---|---|
+| `apps/web` | Frontend | Next.js 16, React 19, Zustand, Tailwind |
+| `apps/api` | Backend: monolito modular con Clean Architecture | NestJS 11, Prisma, PostgreSQL, Redis |
+| `infra/` | Infraestructura local y pruebas de carga | Docker Compose, nginx, k6 |
+| `docs/` | Especificaciones SDD y documentación técnica | Markdown |
+
+## Requisitos
+
+- Node.js 20 o superior
+- Docker Desktop (PostgreSQL y Redis locales)
+
+## Puesta en marcha local
+
+```bash
+npm install
+npm run infra:up                          # PostgreSQL + Redis en Docker
+cp apps/api/.env.example apps/api/.env    # valores locales listos para usar
+cp apps/web/.env.example apps/web/.env.local
+npm run db:migrate                        # aplica las migraciones
+npm run dev:api                           # http://localhost:4000/api/v1
+npm run dev:web                           # http://localhost:3000
+```
+
+- Swagger (documentación de la API): http://localhost:4000/api/docs
+- Salud: http://localhost:4000/api/v1/health/ready
+
+Sin claves externas, el proyecto funciona en modo local: login de desarrollo (`AUTH_DEV_LOGIN=true`), IA simulada (`AI_PROVIDER=fake`) y voz con guion (`NEXT_PUBLIC_VOICE_MODE=mock`). Para usar Supabase y Gemini reales, completa las variables indicadas en cada `.env.example`.
+
+## Arquitectura del backend
+
+Cada módulo de negocio (`apps/api/src/modules/*`) sigue Clean Architecture:
+
+```
+domain/          entidades y reglas puras (sin frameworks)
+application/     casos de uso y puertos (interfaces)
+infrastructure/  adaptadores: Prisma, Redis, Gemini, Supabase JWT
+presentation/    controladores REST y DTOs (Swagger)
+```
+
+ESLint impide que `domain` y `application` importen proveedores concretos (Prisma, Redis, Gemini).
