@@ -20,7 +20,10 @@
     "test:cov": "npm run test:cov:all -w apps/api",
     "test:integration": "npm run test:integration -w apps/api",
     "test:e2e": "npm run test:e2e -w apps/web",
-    "db:deploy": "npm run prisma:deploy -w apps/api"
+    "db:deploy": "npm run prisma:deploy -w apps/api",
+    "stack:up": "docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod.local --profile local-db up -d --build",
+    "stack:down": "docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod.local --profile local-db down",
+    "stack:verify": "bash infra/scripts/verificar-escalabilidad.sh"
   },
   "engines": {
     "node": ">=20"

@@ -10,6 +10,8 @@ export const API_PREFIX = 'api/v1'
 export function configureApp(app: INestApplication) {
   const config = app.get(AppConfig)
 
+  // Detrás de nginx: la IP del cliente sale de X-Forwarded-For, solo si el proxy está en una red privada.
+  app.getHttpAdapter().getInstance().set('trust proxy', 'loopback, uniquelocal')
   app.setGlobalPrefix(API_PREFIX)
   app.use(helmet())
   app.enableCors({ origin: config.corsOrigins, credentials: false })

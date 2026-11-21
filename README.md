@@ -56,3 +56,16 @@ ESLint impide que `domain` y `application` importen proveedores concretos (Prism
 | `npm run test:e2e` | Playwright en Chromium contra la web y la API (las levanta si no están corriendo) |
 
 CI/CD: [docs/despliegue/ci-cd.md](docs/despliegue/ci-cd.md). Estrategia, resultados y matriz criterio → prueba: [docs/pruebas/matriz-pruebas.md](docs/pruebas/matriz-pruebas.md). Especificaciones: [docs/specs](docs/specs/README.md).
+
+## Stack escalable (producción en VPS y pruebas de carga)
+
+`infra/docker-compose.prod.yml`: nginx → 3 réplicas de la API + 2 de la web, Redis compartido y PostgreSQL vía PgBouncer.
+
+```bash
+npm run stack:up        # construye y levanta todo en http://localhost:8080
+npx prisma migrate deploy --schema apps/api/prisma/schema.prisma   # con DATABASE_URL apuntando a 127.0.0.1:5433 (primera vez)
+npm run stack:verify    # reparto, estado compartido, rate limit global y failover
+npm run stack:down
+```
+
+Decisión y resultados: [ADR-009](docs/arquitectura/ADR-009-escalabilidad.md).

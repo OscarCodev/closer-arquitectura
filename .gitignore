@@ -25,3 +25,5 @@ infra/k6/results/
 *.pem
 npm-debug.log*
 .vercel
+!infra/.env.prod.local
+infra/.env.prod

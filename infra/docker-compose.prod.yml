@@ -1,0 +1,126 @@
+# Stack de producción escalable de Closer (VPS) y entorno de pruebas de carga.
+#
+#   Internet ─► Cloudflare (TLS + CDN) ─► nginx :80 ─┬─► api-1 ┐
+#                                                     ├─► api-2 ├─► Redis (caché + rate limit compartido)
+#                                                     ├─► api-3 ┘   └─► PostgreSQL (Supabase o local vía PgBouncer)
+#                                                     ├─► web-1
+#                                                     └─► web-2
+#
+# Producción (VPS, base de datos en Supabase):
+#   cp infra/.env.prod.example infra/.env.prod   # completar
+#   docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d
+#
+# Local, sin Supabase (pruebas de escalabilidad y k6): agrega Postgres + PgBouncer con el perfil local-db
+#   docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod.local --profile local-db up -d --build
+name: closer-prod
+
+x-api: &api
+  image: ${API_IMAGE:-ghcr.io/oscarcodev/closer-api:latest}
+  build:
+    context: ..
+    dockerfile: apps/api/Dockerfile
+  restart: unless-stopped
+  env_file: ${API_ENV_FILE:-.env.prod}
+  environment:
+    REDIS_URL: redis://redis:6379
+  depends_on:
+    redis:
+      condition: service_healthy
+  deploy:
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 512M
+
+x-web: &web
+  image: ${WEB_IMAGE:-closer-web:latest}
+  build:
+    context: ..
+    dockerfile: apps/web/Dockerfile
+    args:
+      NEXT_PUBLIC_API_URL: /api/v1
+      NEXT_PUBLIC_AUTH_MODE: ${NEXT_PUBLIC_AUTH_MODE:-dev}
+      NEXT_PUBLIC_VOICE_MODE: ${NEXT_PUBLIC_VOICE_MODE:-mock}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+  restart: unless-stopped
+  deploy:
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 384M
+
+services:
+  api-1: *api
+  api-2: *api
+  api-3: *api
+
+  web-1: *web
+  web-2: *web
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on: [api-1, api-2, api-3, web-1, web-2]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/nginx-health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--save", ""]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── Solo para pruebas locales (perfil local-db). En producción la BD es Supabase. ──
+  postgres:
+    profiles: [local-db]
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: closer
+      POSTGRES_PASSWORD: closer
+      POSTGRES_DB: closer
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    command: ["postgres", "-c", "max_connections=100"]
+    ports:
+      - "5433:5432"   # para aplicar migraciones desde la máquina
+    volumes:
+      - prod-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U closer -d closer"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Pool de conexiones: miles de clientes comparten pocas conexiones reales a PostgreSQL
+  # (en Supabase cumple esta función su pooler, Supavisor, en el puerto 6543).
+  pgbouncer:
+    profiles: [local-db]
+    image: edoburu/pgbouncer:v1.26.1-p0
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: closer
+      DB_PASSWORD: closer
+      DB_NAME: closer
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 2000
+      DEFAULT_POOL_SIZE: 30
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  prod-postgres-data:
