@@ -23,20 +23,21 @@ export default defineConfig({
     viewport: { width: 1280, height: 800 },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } }],
+  // En CI se usan los builds de producción (sin compilación bajo demanda); en local, los servidores de desarrollo.
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : [
         {
-          command: 'npm run start:dev',
+          command: process.env.CI ? 'node dist/main.js' : 'npm run start:dev',
           cwd: '../api',
-          url: 'http://localhost:4000/api/v1/health/live',
-          reuseExistingServer: true,
+          url: 'http://127.0.0.1:4000/api/v1/health/live',
+          reuseExistingServer: !process.env.CI,
           timeout: 180_000,
         },
         {
-          command: 'npm run dev',
+          command: process.env.CI ? 'npm run start' : 'npm run dev',
           url: WEB_URL,
-          reuseExistingServer: true,
+          reuseExistingServer: !process.env.CI,
           timeout: 180_000,
         },
       ],

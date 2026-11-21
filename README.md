@@ -55,4 +55,4 @@ ESLint impide que `domain` y `application` importen proveedores concretos (Prism
 | `npm run test:cov` | Unitarias + integración con reporte de cobertura en `apps/api/coverage/index.html` |
 | `npm run test:e2e` | Playwright en Chromium contra la web y la API (las levanta si no están corriendo) |
 
-Estrategia, resultados y matriz criterio → prueba: [docs/pruebas/matriz-pruebas.md](docs/pruebas/matriz-pruebas.md). Especificaciones: [docs/specs](docs/specs/README.md).
+CI/CD: [docs/despliegue/ci-cd.md](docs/despliegue/ci-cd.md). Estrategia, resultados y matriz criterio → prueba: [docs/pruebas/matriz-pruebas.md](docs/pruebas/matriz-pruebas.md). Especificaciones: [docs/specs](docs/specs/README.md).

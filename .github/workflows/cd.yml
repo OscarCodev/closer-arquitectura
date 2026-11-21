@@ -1,0 +1,157 @@
+# Despliegue continuo: solo corre cuando el CI de la rama main terminó en verde.
+#   1. Construye y publica la imagen Docker de la API en GitHub Container Registry.
+#   2. Aplica las migraciones pendientes a la base de datos de producción.
+#   3. Despliega la API (Render, Railway o un VPS con Docker Compose, según los secretos configurados).
+#   4. Despliega la web en Vercel.
+#   5. Prueba de humo contra las URLs públicas.
+# Cada paso de despliegue se salta solo si su secreto no está configurado; ver docs/despliegue/ci-cd.md.
+name: CD
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    name: Imagen Docker de la API
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - id: meta
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/closer-api" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}:latest
+            ${{ steps.meta.outputs.image }}:${{ github.event.workflow_run.head_sha || github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  migrate:
+    name: Migraciones de base de datos
+    needs: image
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DIRECT_DATABASE_URL: ${{ secrets.PROD_DIRECT_DATABASE_URL }}
+      DATABASE_URL: ${{ secrets.PROD_DIRECT_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - if: env.DIRECT_DATABASE_URL != ''
+        run: npm ci -w apps/api
+      - name: prisma migrate deploy (no destructivo, solo migraciones pendientes)
+        if: env.DIRECT_DATABASE_URL != ''
+        run: npm run prisma:deploy -w apps/api
+      - if: env.DIRECT_DATABASE_URL == ''
+        run: echo "::notice::PROD_DIRECT_DATABASE_URL no configurado; se omiten las migraciones."
+
+  deploy-api:
+    name: Desplegar API
+    needs: [image, migrate]
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      IMAGE: ${{ needs.image.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Render (deploy hook con la imagen recién publicada)
+        if: env.RENDER_DEPLOY_HOOK_URL != ''
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=$(printf %s "$IMAGE:latest" | jq -sRr @uri)"
+
+      - name: Railway
+        if: env.RAILWAY_TOKEN != ''
+        run: npx --yes @railway/cli@3 up --service closer-api --detach
+
+      - name: VPS con Docker Compose (réplicas + nginx)
+        if: env.VPS_HOST != ''
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/closer
+            docker compose -f infra/docker-compose.prod.yml pull api
+            docker compose -f infra/docker-compose.prod.yml up -d --remove-orphans
+
+      - if: env.RENDER_DEPLOY_HOOK_URL == '' && env.RAILWAY_TOKEN == '' && env.VPS_HOST == ''
+        run: echo "::notice::No hay destino de despliegue de la API configurado (Render, Railway o VPS)."
+
+  deploy-web:
+    name: Desplegar web (Vercel)
+    needs: deploy-api
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - name: vercel pull + build + deploy --prod
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          npx --yes vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+          npx --yes vercel@latest build --prod --token="$VERCEL_TOKEN"
+          npx --yes vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+      - if: env.VERCEL_TOKEN == ''
+        run: echo "::notice::VERCEL_TOKEN no configurado; se omite el despliegue de la web (o úsala con la integración Git de Vercel)."
+
+  smoke:
+    name: Prueba de humo en producción
+    needs: deploy-web
+    runs-on: ubuntu-latest
+    env:
+      API_URL: ${{ vars.PROD_API_URL }}
+      WEB_URL: ${{ vars.PROD_WEB_URL }}
+    steps:
+      - name: API lista (PostgreSQL y Redis arriba)
+        if: env.API_URL != ''
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS "$API_URL/health/ready" && exit 0
+            sleep 10
+          done
+          exit 1
+      - name: Web responde
+        if: env.WEB_URL != ''
+        run: curl -fsS -o /dev/null -w "%{http_code}\n" "$WEB_URL"

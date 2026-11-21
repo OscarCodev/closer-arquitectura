@@ -15,9 +15,9 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.ts",
     "test:integration": "jest --config ./test/jest-integration.config.js --runInBand",
-    "test:cov:all": "jest --config ./jest.coverage.config.js --runInBand --coverage"
+    "test:cov:all": "jest --config ./jest.coverage.config.js --runInBand --coverage",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@google/genai": "^3.6.1",
