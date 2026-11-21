@@ -41,9 +41,16 @@ export class RedisCacheAdapter implements CachePort {
     }
   }
 
+  /** Contadores de esta réplica (se exponen en GET /health/metrics para las pruebas de carga). */
+  readonly stats = { hits: 0, misses: 0 }
+
   async getOrSet<T>(key: string, ttlSeconds: number, loader: () => Promise<T>): Promise<T> {
     const cached = await this.get<T>(key)
-    if (cached !== null) return cached
+    if (cached !== null) {
+      this.stats.hits++
+      return cached
+    }
+    this.stats.misses++
     const value = await loader()
     await this.set(key, value, ttlSeconds)
     return value
