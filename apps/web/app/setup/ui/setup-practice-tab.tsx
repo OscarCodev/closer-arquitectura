@@ -29,6 +29,7 @@ type SetupPracticeTabProps = {
   onAdvancedPreview: (preview: { tab: AdvancedTab; option: string } | null) => void
   onApplyAutofill: () => void
   onStartPractice: () => void
+  errorMessage?: string | null
 }
 
 export function SetupPracticeTab({
@@ -57,6 +58,7 @@ export function SetupPracticeTab({
   onAdvancedPreview,
   onApplyAutofill,
   onStartPractice,
+  errorMessage,
 }: SetupPracticeTabProps) {
   return (
     <section className="flex flex-1 items-center justify-center overflow-auto px-4 py-8 md:px-6">
@@ -359,6 +361,12 @@ export function SetupPracticeTab({
 
             {autofillStatus === 'error' && autofillMessage ? (
               <p className="typo-caption mt-2 text-[var(--color-danger-text)]">{autofillMessage}</p>
+            ) : null}
+
+            {errorMessage ? (
+              <p role="alert" className="typo-caption mt-2 text-[var(--color-danger-text)]">
+                {errorMessage}
+              </p>
             ) : null}
 
             <button

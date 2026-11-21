@@ -53,7 +53,12 @@ export class SimulationsController {
     return {
       simulationId,
       session: sessionDto,
-      prospect: { name: session.scenario.prospectName, role: session.scenario.prospectRole, company: session.scenario.prospectCompany },
+      prospect: {
+        name: session.scenario.prospectName,
+        role: session.scenario.prospectRole,
+        company: session.scenario.prospectCompany,
+        description: session.scenario.prospect,
+      },
       live,
       maxCallMinutes: MAX_CALL_MINUTES,
     }

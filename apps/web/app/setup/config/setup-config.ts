@@ -1,9 +1,4 @@
-import type { AdvancedOptionCopy, AdvancedTab, RecentSession, SavedProfile } from '../types/setup-types'
-import { MOCK_RECENT_SESSIONS } from './mock-simulation-data'
-
-export const PROFILE_STORAGE_KEY = 'closer.prospects.v2.4'
-
-export const INITIAL_RECENT_SESSIONS: RecentSession[] = MOCK_RECENT_SESSIONS
+import type { AdvancedOptionCopy, AdvancedTab } from '../types/setup-types'
 
 export const SAMPLE_SCENARIOS = [
   {
@@ -17,59 +12,6 @@ export const SAMPLE_SCENARIOS = [
       'Ofrecemos consultoria de crecimiento para e-commerce en Latam. Servicio trimestral orientado a aumentar conversion y ticket promedio.',
     prospect:
       'Luis Rivas, fundador de marca DTC, equipo pequeño, CAC en aumento y necesidad de estabilizar ROAS.',
-  },
-]
-
-export const DEFAULT_SAVED_PROFILES: SavedProfile[] = [
-  {
-    id: '5',
-    name: 'Marcela Ríos',
-    personName: 'Marcela Ríos',
-    roleCompany: 'Head of Operations en LogísticaPro',
-    prospect:
-      'Directora de operaciones con 12 años de experiencia en cadenas de suministro para el sector retail. Actualmente gestiona una red de 35 centros de distribución en 8 países de Latinoamérica. Su principal dolor es la falta de visibilidad en tiempo real del inventario, lo que genera excesos de stock en unas ubicaciones y quiebres en otras. Ha intentado implementar dos ERPs distintos en los últimos 3 años sin éxito, generando frustración en su equipo y desconfianza hacia nuevos proveedores de tecnología. Necesita demostrar ROI en menos de 6 meses para mantener el apoyo del board. Además, enfrenta presión por reducir costos logísticos en un 15% antes de fin de año, al tiempo que mantiene los niveles de servicio actuales. Es muy analítica, pide datos concretos y casos de éxito verificables antes de tomar decisiones. Suele involucrar a su equipo de TI y al CFO en las evaluaciones.',
-    context: '',
-    createdAt: 'Hace 5 días',
-  },
-  {
-    id: '1',
-    name: 'Carlos Mendoza',
-    personName: 'Carlos Mendoza',
-    roleCompany: 'Director de IT en TechFlow Solutions',
-    prospect:
-      'Perfil analítico y directo, enfocado fuertemente en reducir costos de nube y agilizar la lenta integración con sistemas legados.',
-    context: '',
-    createdAt: 'Hace 2 días',
-  },
-  {
-    id: '2',
-    name: 'Laura Valdés',
-    personName: 'Laura Valdés',
-    roleCompany: 'CEO en Innovate Startups',
-    prospect:
-      'Visionaria y acelerada. Busca soluciones inmediatas a su falta de tiempo, contratación ineficiente y crecimiento estancado.',
-    context: '',
-    createdAt: 'Hace 1 semana',
-  },
-  {
-    id: '3',
-    name: 'Roberto Gómez',
-    personName: 'Roberto Gómez',
-    roleCompany: 'Gerente de Compras en Industrias Apex',
-    prospect:
-      'Comprador escéptico y buen negociador. Siempre exigirá control extremo de presupuesto, teniendo alta aversión al riesgo y largos procesos burocráticos.',
-    context: '',
-    createdAt: 'Ayer',
-  },
-  {
-    id: '4',
-    name: 'Ana Silva',
-    personName: 'Ana Silva',
-    roleCompany: 'VP of Engineering en GlobalBankCorp',
-    prospect:
-      'Líder técnica muy orientada a los detalles. Sus principales retos son mitigar la deuda técnica masiva, la seguridad de datos y retener a su talento.',
-    context: '',
-    createdAt: 'Hace 3 semanas',
   },
 ]
 

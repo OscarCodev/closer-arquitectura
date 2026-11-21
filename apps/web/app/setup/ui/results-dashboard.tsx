@@ -110,60 +110,49 @@ interface ResultsDashboardProps {
   onBack?: () => void
 }
 
-export function ResultsDashboard({ recentSession, onRetry, onBack }: ResultsDashboardProps) {
-  if (!recentSession) {
-    return (
-      <section className="grid flex-1 place-items-center bg-[var(--brand-light-50)] px-6 py-12">
-        <div className="text-center">
-          <p className="typo-micro font-semibold uppercase tracking-[0.14em] text-[var(--brand-gray-500)]">
-            Sin datos
-          </p>
-          <h2 className="typo-page-title mt-2 font-semibold text-[var(--brand-ink-900)]">
-            Aun no hay una sesion para mostrar
-          </h2>
-        </div>
-      </section>
-    )
-  }
-
-  const [currentSimulationIndex, setCurrentSimulationIndex] = useState(
-    Math.max(0, recentSession.simulations.length - 1),
+function EmptyResults({ title }: { title: string }) {
+  return (
+    <section className="grid flex-1 place-items-center bg-[var(--brand-light-50)] px-6 py-12">
+      <div className="text-center">
+        <p className="typo-micro font-semibold uppercase tracking-[0.14em] text-[var(--brand-gray-500)]">Sin datos</p>
+        <h2 className="typo-page-title mt-2 font-semibold text-[var(--brand-ink-900)]">{title}</h2>
+      </div>
+    </section>
   )
+}
+
+/**
+ * Los estados vacíos se resuelven aquí, ANTES de cualquier hook. El MVP llamaba hooks después de un
+ * `return` temprano y la pantalla se caía al pasar de una sesión sin intentos a una con intentos.
+ */
+export function ResultsDashboard({ recentSession, onRetry, onBack }: ResultsDashboardProps) {
+  if (!recentSession) return <EmptyResults title="Aún no hay una sesión para mostrar" />
+  if (recentSession.simulations.length === 0) return <EmptyResults title="Esta sesión no tiene simulaciones todavía" />
+  // La `key` reinicia el estado interno al cambiar de sesión o al llegar un intento nuevo.
+  return (
+    <SessionResults
+      key={`${recentSession.id}:${recentSession.simulations.length}`}
+      recentSession={recentSession}
+      onRetry={onRetry}
+      onBack={onBack}
+    />
+  )
+}
+
+function SessionResults({ recentSession, onRetry, onBack }: ResultsDashboardProps & { recentSession: RecentSession }) {
+  const [currentSimulationIndex, setCurrentSimulationIndex] = useState(Math.max(0, recentSession.simulations.length - 1))
   const [displayScore, setDisplayScore] = useState(0)
   const [mode, setMode] = useState<'summary' | 'review' | 'transcript' | 'context'>('summary')
   const [currentTurn, setCurrentTurn] = useState(0)
 
   const totalSimulations = recentSession.simulations.length
-  const safeSimulationIndex = Math.min(Math.max(currentSimulationIndex, 0), Math.max(totalSimulations - 1, 0))
+  const safeSimulationIndex = Math.min(Math.max(currentSimulationIndex, 0), totalSimulations - 1)
   const currentSimulation = recentSession.simulations[safeSimulationIndex]
-  const canonicalContext = recentSession.simulations[0]?.context || currentSimulation?.context
+  const canonicalContext = recentSession.simulations[0]?.context || currentSimulation.context
   const sessionMode = recentSession.advancedSelections?.modo || 'Ciclo Completo'
   const sessionTone = recentSession.advancedSelections?.tono || 'Perfil Real'
 
-  if (!currentSimulation) {
-    return (
-      <section className="grid flex-1 place-items-center bg-[var(--brand-light-50)] px-6 py-12">
-        <div className="text-center">
-          <p className="typo-micro font-semibold uppercase tracking-[0.14em] text-[var(--brand-gray-500)]">
-            Sin datos
-          </p>
-          <h2 className="typo-page-title mt-2 font-semibold text-[var(--brand-ink-900)]">
-            Esta sesion no tiene simulaciones todavia
-          </h2>
-        </div>
-      </section>
-    )
-  }
-
   const { metrics, conversation, analysis } = currentSimulation
-
-  // Reset dashboard state when user selects a different recent session.
-  useEffect(() => {
-    setCurrentSimulationIndex(Math.max(0, recentSession.simulations.length - 1))
-    setMode('summary')
-    setCurrentTurn(0)
-    setDisplayScore(0)
-  }, [recentSession])
 
   // Score animation
   useEffect(() => {

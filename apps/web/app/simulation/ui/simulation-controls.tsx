@@ -12,7 +12,6 @@ type SimulationControlsProps = {
 
 export function SimulationControls({
   isMicMuted,
-  isConnected,
   isRequestingConsejo,
   canRequestConsejo,
   coachDisabledReason,

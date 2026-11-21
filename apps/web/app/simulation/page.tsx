@@ -1,14 +1,14 @@
 'use client'
 
-import { mockFetch } from '@/mocks/api'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
+import { closerApi } from '@/lib/api/closer-api'
+import { errorMessage as apiErrorMessage } from '@/lib/api/http'
 import { getActiveGeminiSession, clearActiveGeminiSession } from '@/lib/gemini/active-session'
 import { useSimulationStore } from '@/stores/use-simulation-store'
 import { useActiveSessionStore } from '@/stores/use-active-session-store'
 import { useAuthStore } from '@/stores/use-auth-store'
-import { getPlanLimits } from '@/lib/billing/plan'
 import { playSessionStart, playSessionEnd, playError } from '@/lib/audio/sounds'
 import { FeedbackLoadingScreen } from './_components/feedback-loading-screen'
 import { DEFAULT_SIMULATION_PROSPECT, formatSimulationTime } from './config/simulation-config'
@@ -16,62 +16,15 @@ import { useSimulationTimer } from './state/use-simulation-timer'
 import { SimulationControls } from './ui/simulation-controls'
 import { SimulationStage } from './ui/simulation-stage'
 import { SimulationTopbar } from './ui/simulation-topbar'
-import type { RecentSession, SimulationSession } from '@/app/setup/types/setup-types'
 import { normalizeStructuredValue } from '@/lib/utils/normalize'
-
-function mergeCanonicalContext(
-  base: {
-    prospectName?: string
-    prospectRole?: string
-    prospectCompany?: string
-    prospectDescription?: string
-    salesContext?: string
-  } | null | undefined,
-  incoming: {
-    prospectName?: string
-    prospectRole?: string
-    prospectCompany?: string
-    prospectDescription?: string
-    salesContext?: string
-  },
-) {
-  return {
-    prospectName: normalizeStructuredValue(base?.prospectName) || normalizeStructuredValue(incoming.prospectName) || 'Prospecto',
-    prospectRole: normalizeStructuredValue(base?.prospectRole) || normalizeStructuredValue(incoming.prospectRole),
-    prospectCompany: normalizeStructuredValue(base?.prospectCompany) || normalizeStructuredValue(incoming.prospectCompany),
-    prospectDescription:
-      normalizeStructuredValue(base?.prospectDescription) ||
-      normalizeStructuredValue(incoming.prospectDescription) ||
-      '',
-    salesContext: normalizeStructuredValue(base?.salesContext) || normalizeStructuredValue(incoming.salesContext) || '',
-  }
-}
-
-async function syncSessionToCloud(session: RecentSession) {
-  try {
-    const getRes = await mockFetch('/api/setup/sessions', { method: 'GET' })
-    if (!getRes.ok) return
-
-    const data = (await getRes.json().catch(() => ({}))) as { sessions?: RecentSession[] }
-    const existing = Array.isArray(data.sessions) ? data.sessions : []
-
-    const merged = [session, ...existing.filter((item) => item.id !== session.id)].slice(0, 60)
-
-    await mockFetch('/api/setup/sessions', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessions: merged }),
-    })
-  } catch {
-    // non-blocking persistence path
-  }
-}
 
 export default function SimulationPage() {
   const [isMicMuted, setIsMicMuted] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [isLoadingComplete, setIsLoadingComplete] = useState(false)
   const [isResultReady, setIsResultReady] = useState(false)
+  const [evaluationError, setEvaluationError] = useState<string | null>(null)
+  const evaluationInput = useRef<{ transcript: Parameters<typeof closerApi.evaluateSimulation>[1]; seconds: number } | null>(null)
   const [coachSuggestions, setCoachSuggestions] = useState<string[]>([])
   const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0)
   const [showCoachCard, setShowCoachCard] = useState(false)
@@ -80,16 +33,21 @@ export default function SimulationPage() {
   const prevErrorRef = useRef<string | null>(null)
   const wasModelSpeakingRef = useRef(false)
   const lastModelSpeechEndAtRef = useRef<number | null>(null)
-  const autoEndedRef = useRef(false)
+  const endCallRef = useRef<() => void>(() => {})
   const router = useRouter()
 
-  const { user, isLoading, initialize, billingStatus } = useAuthStore()
-  const { practiceConfig, activeSession, setActiveSession } = useActiveSessionStore()
+  const { user, isLoading, initialize } = useAuthStore()
+  const { practiceConfig, currentSimulation, setActiveSession, setCurrentSimulation } = useActiveSessionStore()
   const { connectionStatus, modelAudioLevel, userAudioLevel, errorMessage, transcript } = useSimulationStore()
 
   const isModelSpeaking = connectionStatus === 'connected' && modelAudioLevel > 0.03
   const isUserSpeaking = !isMicMuted && connectionStatus === 'connected' && userAudioLevel > 0.08
-  const callLimitSeconds = getPlanLimits(billingStatus?.plan).sessionMinutes * 60
+  const callLimitSeconds = (currentSimulation?.maxCallMinutes ?? 10) * 60
+
+  // Sin intento activo (p. ej. recarga de la página) no hay llamada que mostrar.
+  useEffect(() => {
+    if (!isLoading && user && !currentSimulation && !isAnalyzing) router.replace(routes.setup)
+  }, [currentSimulation, isAnalyzing, isLoading, router, user])
 
   useEffect(() => {
     initialize()
@@ -174,11 +132,6 @@ export default function SimulationPage() {
       return { canRequest: false, reason: 'Puedes pedir consejo cuando termine la intervencion de la IA' }
     }
 
-    const lastModelSpeechEndAt = lastModelSpeechEndAtRef.current
-    if (!lastModelSpeechEndAt || Date.now() - lastModelSpeechEndAt < 500) {
-      return { canRequest: false, reason: 'Esperando fin de turno de la IA...' }
-    }
-
     return { canRequest: true, reason: 'Pedir consejo para tu siguiente respuesta' }
   }, [connectionStatus, practiceConfig, isMicMuted, isCoachThinking, transcript, isModelSpeaking, isUserSpeaking])
 
@@ -210,53 +163,28 @@ export default function SimulationPage() {
       return
     }
 
+    // Margen de medio segundo tras el fin del turno de la IA (se evalúa al hacer clic, no en el render).
+    const lastModelSpeechEndAt = lastModelSpeechEndAtRef.current
+    if (!lastModelSpeechEndAt || Date.now() - lastModelSpeechEndAt < 500) {
+      setCoachSuggestions(['Esperando fin de turno de la IA...'])
+      setCurrentSuggestionIndex(0)
+      return
+    }
+
+    if (!currentSimulation) return
     setIsCoachThinking(true)
     try {
-      const res = await mockFetch('/api/simulation/coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          context: practiceConfig.context,
-          prospect: practiceConfig.prospect,
-          modo: practiceConfig.advancedSelections.modo,
-          tono: practiceConfig.advancedSelections.tono,
-          transcript,
-        }),
-      })
-
-      if (!res.ok) {
-        if (res.status === 429) {
-          const data = (await res.json().catch(() => ({}))) as { retryAfterSeconds?: number; error?: string }
-          const retrySeconds = Number.isFinite(data.retryAfterSeconds)
-            ? Math.max(1, Math.floor(data.retryAfterSeconds as number))
-            : 30
-          setCoachSuggestions([
-            data.error || `Límite temporal alcanzado para consejos. Reintenta en ${retrySeconds}s.`,
-          ])
-          setCurrentSuggestionIndex(0)
-          return
-        }
-
-        setCoachSuggestions(['No pude generar sugerencia ahora. Intenta de nuevo en unos segundos.'])
-        setCurrentSuggestionIndex(0)
-        return
-      }
-
-      const data: { tip?: string } = await res.json()
-      const tipText = (data.tip && data.tip.trim().length > 0) 
-        ? data.tip.trim()
-        : 'Haz una pregunta de seguimiento concreta para descubrir impacto y urgencia.'
-      
-      const updatedSuggestions = [...coachSuggestions, tipText]
+      const tip = await closerApi.coachTip(currentSimulation.simulationId, transcript)
+      const updatedSuggestions = [...coachSuggestions, tip]
       setCoachSuggestions(updatedSuggestions)
       setCurrentSuggestionIndex(updatedSuggestions.length - 1)
-    } catch {
-      setCoachSuggestions(['No pude generar sugerencia ahora. Intenta de nuevo en unos segundos.'])
+    } catch (error) {
+      setCoachSuggestions([apiErrorMessage(error, 'No pude generar sugerencia ahora. Intenta de nuevo en unos segundos.')])
       setCurrentSuggestionIndex(0)
     } finally {
       setIsCoachThinking(false)
     }
-  }, [coachGate.canRequest, coachGate.reason, coachSuggestions, connectionStatus, practiceConfig, transcript])
+  }, [coachGate.canRequest, coachGate.reason, coachSuggestions, connectionStatus, currentSimulation, practiceConfig, transcript])
 
   const handlePrevSuggestion = useCallback(() => {
     setCurrentSuggestionIndex((prev) => Math.max(0, prev - 1))
@@ -270,7 +198,10 @@ export default function SimulationPage() {
     setShowCoachCard(false)
   }, [])
 
-  const { seconds } = useSimulationTimer(isAnalyzing)
+  // Al llegar al límite de minutos la llamada se cierra y se evalúa sola.
+  const { seconds } = useSimulationTimer(connectionStatus === 'connected' && !isAnalyzing, callLimitSeconds, () =>
+    endCallRef.current(),
+  )
   const time = useMemo(() => formatSimulationTime(seconds), [seconds])
 
   const prospect = useMemo(
@@ -295,130 +226,72 @@ export default function SimulationPage() {
     }
   }, [])
 
+  /** Envía la transcripción al servidor, que evalúa y guarda el resultado (idempotente: se puede reintentar). */
+  const runEvaluation = useCallback(async () => {
+    const input = evaluationInput.current
+    if (!currentSimulation || !input) return
+    setEvaluationError(null)
+    try {
+      const { session } = await closerApi.evaluateSimulation(currentSimulation.simulationId, input.transcript, input.seconds)
+      setActiveSession(session)
+      setCurrentSimulation(null)
+      setIsResultReady(true)
+    } catch (error) {
+      setEvaluationError(apiErrorMessage(error, 'No pudimos evaluar la llamada.'))
+    }
+  }, [currentSimulation, setActiveSession, setCurrentSimulation])
+
   const handleEndCall = useCallback(() => {
     playSessionEnd()
     clearActiveGeminiSession()
+    evaluationInput.current = { transcript, seconds }
     setIsAnalyzing(true)
     setIsLoadingComplete(false)
     setIsResultReady(false)
-
-    void (async () => {
-      if (!practiceConfig) {
-        setIsResultReady(true)
-        return
-      }
-
-      try {
-        const res = await mockFetch('/api/simulation/result', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            practiceConfig,
-            transcript,
-            durationSeconds: seconds,
-          }),
-        })
-
-        if (res.status === 429) {
-          const data = (await res.json().catch(() => ({}))) as { retryAfterSeconds?: number; error?: string }
-          const retrySeconds = Number.isFinite(data.retryAfterSeconds)
-            ? Math.max(1, Math.floor(data.retryAfterSeconds as number))
-            : 60
-          useSimulationStore
-            .getState()
-            .setErrorMessage(data.error || `Límite temporal alcanzado para análisis. Reintenta en ${retrySeconds}s.`)
-          setIsAnalyzing(false)
-          setIsLoadingComplete(false)
-          setIsResultReady(false)
-          return
-        }
-
-        const data: { simulation?: SimulationSession; suggestedTitle?: string; error?: string } = await res.json()
-
-        if (!res.ok || !data.simulation) {
-          throw new Error(data.error || 'Error generando resultados')
-        }
-
-        const sessionName =
-          activeSession?.name ||
-          data.suggestedTitle ||
-          `Simulación de ${practiceConfig.prospectName || 'prospecto'}`
-        const baseSession: RecentSession =
-          activeSession || {
-            id: `session-${Date.now()}`,
-            name: sessionName,
-            voiceName: practiceConfig.voiceName,
-            prospect: practiceConfig.prospectName || practiceConfig.prospect,
-            context: practiceConfig.context,
-            advancedSelections: practiceConfig.advancedSelections,
-            createdAt: new Date().toISOString(),
-            simulations: [],
-          }
-
-        const canonicalContext = mergeCanonicalContext(baseSession.simulations[0]?.context, {
-          prospectName: practiceConfig.prospectName || baseSession.prospect || 'Prospecto',
-          prospectRole: practiceConfig.prospectRole || '',
-          prospectCompany: practiceConfig.prospectCompany || '',
-          prospectDescription: practiceConfig.prospect || baseSession.context || '',
-          salesContext: practiceConfig.context || baseSession.context || '',
-        })
-
-        const normalizedSimulation: SimulationSession = {
-          ...data.simulation,
-          context: canonicalContext,
-        }
-
-        const updatedSession: RecentSession = {
-          ...baseSession,
-          voiceName: baseSession.voiceName || practiceConfig.voiceName,
-          prospect: canonicalContext.prospectName || baseSession.prospect,
-          context: canonicalContext.salesContext || baseSession.context,
-          advancedSelections: practiceConfig.advancedSelections || baseSession.advancedSelections,
-          simulations: [...baseSession.simulations, normalizedSimulation],
-        }
-
-        setActiveSession(updatedSession)
-        await syncSessionToCloud(updatedSession)
-      } catch {
-        const fallbackSession: RecentSession =
-          activeSession || {
-            id: `session-${Date.now()}`,
-            name: `Simulación de ${practiceConfig.prospectName || 'prospecto'}`,
-            voiceName: practiceConfig.voiceName,
-            prospect: practiceConfig.prospectName || practiceConfig.prospect,
-            context: practiceConfig.context,
-            advancedSelections: practiceConfig.advancedSelections,
-            createdAt: new Date().toISOString(),
-            simulations: [],
-          }
-
-        setActiveSession(fallbackSession)
-        await syncSessionToCloud(fallbackSession)
-      } finally {
-        setIsResultReady(true)
-      }
-    })()
-  }, [activeSession, practiceConfig, seconds, setActiveSession, transcript])
+    void runEvaluation()
+  }, [runEvaluation, seconds, transcript])
 
   useEffect(() => {
-    if (isAnalyzing || autoEndedRef.current) return
-
-    if (seconds >= callLimitSeconds) {
-      autoEndedRef.current = true
-      try {
-        window.sessionStorage.setItem('closer.upgrade.reason', 'minutes')
-      } catch {
-        // ignore storage failures
-      }
-      handleEndCall()
-    }
-  }, [callLimitSeconds, handleEndCall, isAnalyzing, seconds])
+    endCallRef.current = handleEndCall
+  }, [handleEndCall])
 
   useEffect(() => {
     if (isAnalyzing && isLoadingComplete && isResultReady) {
       router.push('/simulation/result')
     }
   }, [isAnalyzing, isLoadingComplete, isResultReady, router])
+
+  if (isAnalyzing && evaluationError) {
+    return (
+      <main className="grid h-[100dvh] w-screen place-items-center bg-[var(--brand-light-50)] px-6 text-center">
+        <div className="max-w-md">
+          <p className="typo-micro font-semibold uppercase tracking-[0.14em] text-[var(--brand-gray-500)]">
+            Evaluación pendiente
+          </p>
+          <h2 className="typo-page-title mt-2 font-semibold text-[var(--brand-ink-900)]">No pudimos evaluar tu llamada</h2>
+          <p className="typo-body mt-3 text-[var(--brand-gray-500)]">
+            {evaluationError} Tu conversación sigue guardada: puedes reintentar sin repetir la llamada.
+          </p>
+          <div className="mt-6 flex justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => void runEvaluation()}
+              className="rounded-xl bg-[var(--brand-ink-900)] px-5 py-3 font-semibold text-white"
+            >
+              Reintentar evaluación
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push(routes.setup)}
+              className="rounded-xl border border-[var(--color-border)] bg-white px-5 py-3 font-semibold text-[var(--brand-ink-900)]"
+            >
+              Volver al menú
+            </button>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   if (isAnalyzing) {
     return (

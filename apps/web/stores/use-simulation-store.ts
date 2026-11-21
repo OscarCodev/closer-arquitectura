@@ -1,11 +1,10 @@
 /**
- * Non-persisted store for live simulation state.
- * Written to by GeminiLiveAudio callbacks (from setup page context),
- * read by the simulation page.
+ * Estado en vivo de la llamada (no persistido).
+ * Lo escriben los callbacks de la sesión de voz y lo lee la página de simulación.
  */
 
 import { create } from 'zustand'
-import type { ConnectionStatus } from '@/mocks/live-audio'
+import type { ConnectionStatus } from '@/lib/voice/voice-session'
 import { mergeStreamingChunk, normalizeTranscriptByRole } from '@/lib/transcript/merge'
 
 type TranscriptEntry = {

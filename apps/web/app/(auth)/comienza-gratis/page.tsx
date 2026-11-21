@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/mocks/supabase-client'
+import { createClient } from '@/lib/auth/auth-client'
+import { resolvePostLoginRoute } from '@/lib/auth/post-login'
 import { routes } from '@/lib/routes'
 import { AppIcon } from '@/components/brand/app-icon'
 
@@ -32,8 +33,7 @@ export default function SignupPage() {
         return
       }
 
-      const onboardingDone = Boolean(user.user_metadata?.onboarding_completed)
-      router.replace(onboardingDone ? routes.setup : routes.onboarding)
+      router.replace(await resolvePostLoginRoute())
     }
 
     checkUser()
@@ -90,9 +90,7 @@ export default function SignupPage() {
       return
     }
 
-    const { data: { user: newUser } } = await supabase.auth.getUser()
-    const onboardingDone = Boolean(newUser?.user_metadata?.onboarding_completed)
-    router.push(onboardingDone ? routes.setup : routes.onboarding)
+    router.push(await resolvePostLoginRoute())
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { User } from '@/mocks/supabase-client'
 import { AppIcon } from '@/components/brand/app-icon'
-import { createClient } from '@/mocks/supabase-client'
+import { createClient, type User } from '@/lib/auth/auth-client'
+import { closerApi } from '@/lib/api/closer-api'
+import { errorMessage } from '@/lib/api/http'
+import { useAuthStore } from '@/stores/use-auth-store'
 import { OnboardingAdaptingScreen } from '@/app/setup/_components/onboarding-adapting-screen'
 import { routes } from '@/lib/routes'
 import type { OnboardingProfile } from '../types/setup-types'
@@ -272,13 +274,11 @@ export default function OnboardingPage() {
 
       const provider = detectProvider(user)
       const userData = (user.user_metadata ?? {}) as Record<string, unknown>
-      const storedProfile = userData.onboarding as Partial<OnboardingProfile> | undefined
+      const storedProfile = (await closerApi.getOnboarding().catch(() => null)) as Partial<OnboardingProfile> | null
       const firstNameFromProfile = getSafeString(storedProfile?.firstName)
-      const firstNameFromAuth = getSafeString(userData.firstName) || getSafeString(userData.full_name).split(' ')[0] || ''
+      const firstNameFromAuth = getSafeString(userData.full_name).split(' ')[0] || ''
 
-      const onboardingDone = Boolean(userData.onboarding_completed)
-
-      if (onboardingDone) {
+      if (storedProfile) {
         router.replace(routes.setup)
         return
       }
@@ -287,19 +287,19 @@ export default function OnboardingPage() {
       setAuthProvider(provider)
       setOnboardingProfile({
         firstName: firstNameFromProfile || firstNameFromAuth,
-        role: getSafeString(storedProfile?.role),
-        roleOtherDetail: getSafeString(storedProfile?.roleOtherDetail),
-        industry: getSafeString(storedProfile?.industry),
-        industryOtherDetail: getSafeString(storedProfile?.industryOtherDetail),
-        sellsTo: getSafeString(storedProfile?.sellsTo),
-        sellsToOtherDetail: getSafeString(storedProfile?.sellsToOtherDetail),
-        experienceLevel: getSafeString(storedProfile?.experienceLevel),
-        mainChallenge: getSafeString(storedProfile?.mainChallenge),
-        mainChallengeOtherDetail: getSafeString(storedProfile?.mainChallengeOtherDetail),
-        weeklyCalls: getSafeString(storedProfile?.weeklyCalls),
-        goalWithCloser: getSafeString(storedProfile?.goalWithCloser),
-        companyName: getSafeString(storedProfile?.companyName),
-        phone: getSafeString(storedProfile?.phone),
+        role: '',
+        roleOtherDetail: '',
+        industry: '',
+        industryOtherDetail: '',
+        sellsTo: '',
+        sellsToOtherDetail: '',
+        experienceLevel: '',
+        mainChallenge: '',
+        mainChallengeOtherDetail: '',
+        weeklyCalls: '',
+        goalWithCloser: '',
+        companyName: '',
+        phone: '',
       })
       setAuthLoading(false)
     }
@@ -400,7 +400,7 @@ export default function OnboardingPage() {
     }
   }, [onboardingAdaptationVisible, router])
 
-  const updateOnboardingField = (field: keyof OnboardingProfile, value: string) => {
+  function updateOnboardingField(field: keyof OnboardingProfile, value: string) {
     setOnboardingError('')
     setOnboardingProfile((prev) => ({
       ...prev,
@@ -408,7 +408,7 @@ export default function OnboardingPage() {
     }))
   }
 
-  const handleSubmitOnboarding = async () => {
+  async function handleSubmitOnboarding() {
     if (!authUser) {
       router.replace(routes.login)
       return
@@ -434,64 +434,14 @@ export default function OnboardingPage() {
       phone: onboardingProfile.phone.trim(),
     }
 
-    const completedAt = new Date().toISOString()
-
-    // Dual-write: Save to both auth.users.user_metadata (for backward compatibility) and user_onboarding table
-    const payload: Record<string, unknown> = {
-      onboarding_completed: true,
-      onboarding_completed_at: completedAt,
-      onboarding: profileToSave,
-    }
-
-    if (profileToSave.firstName) {
-      payload.firstName = profileToSave.firstName
-      payload.full_name = profileToSave.firstName
-    }
-
-    // Write to auth.users.user_metadata
-    const { error: authError } = await supabase.auth.updateUser({ data: payload })
-
-    if (authError) {
-      setOnboardingLoading(false)
-      setOnboardingError('No pudimos guardar tu onboarding. Intentalo de nuevo.')
-      return
-    }
-
-    // Write to user_onboarding table (new source of truth)
+    // Una sola escritura, en el servidor (el MVP escribía en dos lugares y se desincronizaban).
     try {
-      const { error: dbError } = await supabase
-        .from('user_onboarding')
-        .upsert(
-          {
-            user_id: authUser.id,
-            first_name: profileToSave.firstName || null,
-            role: profileToSave.role || null,
-            role_other_detail: profileToSave.roleOtherDetail,
-            industry: profileToSave.industry || null,
-            industry_other_detail: profileToSave.industryOtherDetail,
-            sells_to: profileToSave.sellsTo || null,
-            sells_to_other_detail: profileToSave.sellsToOtherDetail,
-            experience_level: profileToSave.experienceLevel || null,
-            main_challenge: profileToSave.mainChallenge || null,
-            main_challenge_other_detail: profileToSave.mainChallengeOtherDetail,
-            weekly_calls: profileToSave.weeklyCalls,
-            goal_with_closer: profileToSave.goalWithCloser,
-            company_name: profileToSave.companyName,
-            phone: profileToSave.phone,
-            onboarding_completed: true,
-            onboarding_completed_at: completedAt,
-          },
-          { onConflict: 'user_id' },
-        )
-        .single()
-
-      if (dbError) {
-        // Log but don't fail - auth write succeeded, DB write is secondary
-        console.error('Secondary write to user_onboarding failed (non-critical):', dbError)
-      }
-    } catch (err) {
-      // Log but don't fail - auth write succeeded, DB write is secondary
-      console.error('Error writing to user_onboarding (non-critical):', err)
+      await closerApi.saveOnboarding(profileToSave)
+      await useAuthStore.getState().refreshUser()
+    } catch (error) {
+      setOnboardingLoading(false)
+      setOnboardingError(errorMessage(error, 'No pudimos guardar tu onboarding. Inténtalo de nuevo.'))
+      return
     }
 
     setOnboardingLoading(false)

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/mocks/supabase-client'
+import { createClient } from '@/lib/auth/auth-client'
+import { resolvePostLoginRoute } from '@/lib/auth/post-login'
 import { routes } from '@/lib/routes'
 import { AppIcon } from '@/components/brand/app-icon'
 
@@ -27,8 +28,7 @@ export default function AuthCallbackPage() {
         return
       }
 
-      const onboardingDone = Boolean(user.user_metadata?.onboarding_completed)
-      router.replace(onboardingDone ? routes.setup : routes.onboarding)
+      router.replace(await resolvePostLoginRoute())
     }
 
     completeSignIn().catch(() => {

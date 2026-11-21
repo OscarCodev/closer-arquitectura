@@ -1,27 +1,13 @@
+import type { ConnectionStatus, VoiceCallbacks, VoiceSession } from './voice-session'
+
 /**
- * MOCK — sustituye a la sesión de voz en vivo con Gemini.
- *
- * Misma interfaz pública que la clase real (connect, startConversation,
- * toggleMute, disconnect…), pero no usa micrófono ni red: reproduce un
- * guion de conversación y anima los niveles de audio para que la pantalla
- * de simulación se vea "viva".
+ * Llamada simulada: no usa micrófono ni red. Reproduce un guion y anima los niveles de audio.
+ * Sirve para pruebas E2E (Playwright), demos sin costo y desarrollo sin clave de Gemini.
  */
-
-export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected'
-
-export interface GeminiLiveCallbacks {
-  onStatusChange: (status: ConnectionStatus) => void
-  onAudioLevel: (level: number) => void
-  onModelAudioLevel: (level: number) => void
-  onTranscript: (role: 'user' | 'model', text: string, finished?: boolean) => void
-  onError: (error: string) => void
-  onInterrupted: () => void
-}
-
 const SCRIPT: Array<{ role: 'user' | 'model'; text: string }> = [
-  { role: 'model', text: 'Hola, ¿qué tal? Tengo unos minutos, cuéntame de qué se trata.' },
-  { role: 'user', text: 'Hola, gracias por tu tiempo. Quería entender cómo gestionan hoy su proceso comercial.' },
-  { role: 'model', text: 'Pues usamos hojas de cálculo y la verdad es que se nos escapan bastantes oportunidades.' },
+  { role: 'model', text: '¿Aló? Sí, dígame, tengo unos minutos.' },
+  { role: 'user', text: 'Hola, gracias por tu tiempo. ¿Cómo gestionan hoy su proceso comercial?' },
+  { role: 'model', text: 'Usamos hojas de cálculo y la verdad es que se nos escapan bastantes oportunidades.' },
   { role: 'user', text: '¿Tienen una idea de cuántas oportunidades pierden al mes por eso?' },
   { role: 'model', text: 'No lo tenemos medido, pero diría que bastantes. ¿Y esto cuánto costaría?' },
   { role: 'user', text: 'Depende del tamaño del equipo. Antes de hablar de precio, ¿quién más participa en la decisión?' },
@@ -30,7 +16,7 @@ const SCRIPT: Array<{ role: 'user' | 'model'; text: string }> = [
   { role: 'model', text: 'Podría ser, mándame una propuesta y lo vemos.' },
 ]
 
-export class GeminiLiveAudio {
+export class ScriptedVoiceSession implements VoiceSession {
   private status: ConnectionStatus = 'disconnected'
   private isMuted = false
   private started = false
@@ -38,12 +24,7 @@ export class GeminiLiveAudio {
   private timers: ReturnType<typeof setTimeout>[] = []
   private levelInterval: ReturnType<typeof setInterval> | null = null
 
-  constructor(
-    private callbacks: GeminiLiveCallbacks,
-    _systemPrompt?: string,
-    _token?: string,
-    _voiceName?: string,
-  ) {}
+  constructor(private readonly callbacks: VoiceCallbacks) {}
 
   async connect() {
     this.setStatus('connecting')
@@ -57,11 +38,11 @@ export class GeminiLiveAudio {
     this.schedule(() => this.playNextLine(), 600)
   }
 
-  hasConversationStarted(): boolean {
+  hasConversationStarted() {
     return this.started
   }
 
-  toggleMute(): boolean {
+  toggleMute() {
     this.isMuted = !this.isMuted
     if (this.isMuted) this.callbacks.onAudioLevel(0)
     return this.isMuted
@@ -78,17 +59,17 @@ export class GeminiLiveAudio {
   }
 
   private playNextLine() {
-    if (this.status !== 'connected') return
-    const line = SCRIPT[this.stepIndex % SCRIPT.length]
+    if (this.status !== 'connected' || this.stepIndex >= SCRIPT.length) return
+    const line = SCRIPT[this.stepIndex]
 
-    // Si el micrófono está silenciado, el "usuario" espera a reactivarlo.
+    // Con el micrófono silenciado, el "vendedor" espera a reactivarlo.
     if (line.role === 'user' && this.isMuted) {
       this.schedule(() => this.playNextLine(), 500)
       return
     }
 
     this.stepIndex += 1
-    const durationMs = Math.min(6000, 1500 + line.text.length * 45)
+    const durationMs = Math.min(5000, 1200 + line.text.length * 35)
     const setLevel = line.role === 'model' ? this.callbacks.onModelAudioLevel : this.callbacks.onAudioLevel
 
     this.startLevels(setLevel)
@@ -97,8 +78,8 @@ export class GeminiLiveAudio {
     this.schedule(() => {
       this.stopLevels()
       setLevel(0)
-      // Pausa más larga tras hablar la IA: es el momento en que se puede pedir "Consejo".
-      this.schedule(() => this.playNextLine(), line.role === 'model' ? 4500 : 1200)
+      // Pausa más larga tras hablar el prospecto: es el momento en que se puede pedir "Consejo".
+      this.schedule(() => this.playNextLine(), line.role === 'model' ? 3500 : 1000)
     }, durationMs)
   }
 

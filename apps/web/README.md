@@ -1,47 +1,38 @@
-# Closer — solo frontend (demo navegable)
+# Closer — frontend (Next.js)
 
-Copia del frontend de `closer` **sin backend**: sin Supabase, sin Gemini, sin rutas `/api`, sin variables de entorno.
-Todas las pantallas son las mismas que en la app real; lo que antes venía del servidor ahora sale de `mocks/`.
+Interfaz de Closer. Habla con el backend (`apps/api`) por REST y con Gemini Live por WebSocket para la voz.
 
 ```bash
-npm install
-npm run dev
+cp .env.example .env.local
+npm run dev        # http://localhost:3000 (requiere la API en http://localhost:4000)
 ```
 
-Abre http://localhost:3000.
+## Modos (variables en `.env.local`)
 
-## User flow
-
-```
-/ (landing)
- ├─ "Comienza gratis" ──▶ /comienza-gratis ─┐
- └─ "Iniciar sesión"  ──▶ /iniciar-sesion  ─┤  Google (instantáneo) o email + cualquier código
-                                            ▼
-                              /setup/onboarding  (solo la primera vez)
-                                            ▼
-                                       /setup  (app principal)
-                                        ├─ Practicar: rellenar contexto/prospecto o "Autocompletar"
-                                        │     └─ "Empezar práctica" ─▶ pantalla de carga ─▶ /simulation
-                                        │            (llamada simulada con guion; "Consejo" da tips)
-                                        │            └─ "Colgar" ─▶ análisis ─▶ /simulation/result
-                                        │                  ├─ "Reintentar" ─▶ /simulation
-                                        │                  └─ "Volver" ─▶ /setup
-                                        ├─ Prospectos (biblioteca de perfiles guardados)
-                                        ├─ Rendimiento (dashboard de progreso)
-                                        ├─ Sesiones recientes (sidebar) ─▶ resultados de cada sesión
-                                        └─ Menú de cuenta: configuración, contacto, plan, cerrar sesión ─▶ /iniciar-sesion
-```
-
-Páginas legales: `/terminos`, `/privacidad`.
-
-## Qué está simulado (`mocks/`)
-
-| Archivo | Sustituye a | Comportamiento |
+| Variable | Valores | Uso |
 |---|---|---|
-| `mocks/supabase-client.ts` | `@supabase/ssr` (auth + tablas) | Usuario guardado en `localStorage`. Cualquier email/código vale. Las consultas a tablas no devuelven nada. |
-| `mocks/api.ts` (`mockFetch`) | `app/api/*` | Perfiles y sesiones en `localStorage` (con sesiones de ejemplo de `mock-simulation-data.ts`); autocompletar, consejos y resultado devuelven datos de ejemplo. |
-| `mocks/live-audio.ts` | Gemini Live (voz) | No usa micrófono: reproduce un guion de conversación y anima las ondas de audio. |
+| `NEXT_PUBLIC_AUTH_MODE` | `dev` · `supabase` | `dev`: login local sin Supabase (cualquier código). `supabase`: Google y código por email reales |
+| `NEXT_PUBLIC_VOICE_MODE` | `mock` · `gemini` | `mock`: llamada con guion, sin micrófono. `gemini`: voz real (requiere `AI_PROVIDER=gemini` en la API) |
+| `NEXT_PUBLIC_API_URL` | URL | Backend, p. ej. `http://localhost:4000/api/v1` |
 
-Para **empezar de cero** (volver a ver el onboarding), cierra sesión o borra el `localStorage` del sitio.
+## Organización
 
-Lo que se quitó respecto al proyecto original: `app/api/`, `proxy.ts` (protección de rutas en servidor), `supabase/`, `utils/supabase/`, `lib/security/`, `lib/billing/user-usage.ts` y las dependencias `@supabase/*` y `@google/genai`. La protección de rutas sigue funcionando en cliente (si no hay sesión, `/setup` te manda a login).
+```
+app/                 pantallas (App Router): login, onboarding, /setup, /simulation, resultados
+lib/api/             cliente HTTP tipado de la API (único punto de contacto con el backend)
+lib/auth/            autenticación: Supabase o modo desarrollo, misma interfaz
+lib/voice/           llamada de voz: Gemini Live o guion simulado, misma interfaz
+lib/practice/        inicio de una práctica (un solo lanzador)
+stores/              estado global (Zustand): sesión de auth, práctica activa, llamada en vivo
+```
+
+## Flujo
+
+```
+/ → /iniciar-sesion → /setup/onboarding (primera vez) → /setup
+/setup → "Iniciar" → POST /simulations (token de voz) → /simulation
+/simulation → "Colgar" → POST /simulations/:id/evaluate → /simulation/result
+/simulation/result → "Reintentar" → POST /simulations { sessionId } (intento n+1)
+```
+
+El puntaje lo calcula y guarda el servidor; el navegador solo envía la transcripción.

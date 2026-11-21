@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { OnboardingProfile } from '../types/setup-types'
 
 type OnboardingSettingsModalProps = {
@@ -79,13 +79,8 @@ export function OnboardingSettingsModal({
   onClose,
   onSave,
 }: OnboardingSettingsModalProps) {
+  // El padre monta el modal con una `key` distinta al abrirlo, así el borrador se reinicia sin efectos.
   const [draft, setDraft] = useState<OnboardingProfile>(initialProfile || emptyProfile)
-
-  useEffect(() => {
-    if (open) {
-      setDraft(initialProfile || emptyProfile)
-    }
-  }, [open, initialProfile])
 
   const canSave = useMemo(() => {
     const roleOk = draft.role !== 'Otro' || draft.roleOtherDetail.trim().length > 1

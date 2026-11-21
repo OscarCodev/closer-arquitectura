@@ -15,16 +15,20 @@ function ScrollableText({ text }: { text: string }) {
 type ProfilesLibraryTabProps = {
   savedProfiles: SavedProfile[]
   editingProfile: SavedProfile | null
-  setSavedProfiles: Dispatch<SetStateAction<SavedProfile[]>>
   setEditingProfile: Dispatch<SetStateAction<SavedProfile | null>>
+  onSaveProfile: (profile: SavedProfile) => void
+  onDeleteProfile: (profileId: string) => void
+  errorMessage?: string | null
   onGoToSetup: () => void
 }
 
 export function ProfilesLibraryTab({
   savedProfiles,
   editingProfile,
-  setSavedProfiles,
   setEditingProfile,
+  onSaveProfile,
+  onDeleteProfile,
+  errorMessage,
   onGoToSetup,
 }: ProfilesLibraryTabProps) {
   const [profileToDelete, setProfileToDelete] = useState<SavedProfile | null>(null)
@@ -37,6 +41,11 @@ export function ProfilesLibraryTab({
         }`}
       >
         <div className={`w-full ${savedProfiles.length === 0 ? 'max-w-md' : 'max-w-5xl'} pt-2`}>
+        {errorMessage && (
+          <p role="alert" className="typo-body mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-600">
+            {errorMessage}
+          </p>
+        )}
         {savedProfiles.length === 0 ? (
           <div className="setup-reveal flex flex-col items-center text-center">
             <div className="mb-6 grid h-24 w-24 place-items-center rounded-full border-[8px] border-white bg-[var(--brand-mist-100)] shadow-sm">
@@ -248,9 +257,7 @@ export function ProfilesLibraryTab({
                             <button
                               onClick={(event) => {
                                 event.stopPropagation()
-                                setSavedProfiles((prev) =>
-                                  prev.map((item) => (item.id === editingProfile.id ? editingProfile : item)),
-                                )
+                                onSaveProfile(editingProfile)
                                 setEditingProfile(null)
                               }}
                               className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] border border-[var(--brand-blue-600)] bg-[var(--brand-blue-600)] text-white shadow-sm transition-colors hover:border-[var(--brand-blue-700)] hover:bg-[var(--brand-blue-700)]"
@@ -339,8 +346,7 @@ export function ProfilesLibraryTab({
           profileName={profileToDelete.name}
           onCancel={() => setProfileToDelete(null)}
           onConfirm={() => {
-            setSavedProfiles((prev) => prev.filter((item) => item.id !== profileToDelete.id))
-            setEditingProfile((prev) => (prev?.id === profileToDelete.id ? null : prev))
+            onDeleteProfile(profileToDelete.id)
             setProfileToDelete(null)
           }}
         />

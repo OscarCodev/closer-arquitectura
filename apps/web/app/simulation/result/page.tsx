@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useRouter } from 'next/navigation'
 import { routes } from '@/lib/routes'
 import { useAuthStore } from '@/stores/use-auth-store'
@@ -8,56 +8,49 @@ import { useActiveSessionStore } from '@/stores/use-active-session-store'
 import { UpgradePlanModal } from '@/components/billing/upgrade-plan-modal'
 import { ResultsDashboard } from '@/app/setup/ui/results-dashboard'
 import { SetupLoadingScreen } from '@/app/setup/ui/setup-loading-screen'
-import { startGeminiSessionInBackground } from '@/lib/gemini/start-practice-session'
-import type { PracticeConfig } from '@/stores/use-active-session-store'
+import { startPractice } from '@/lib/practice/start-practice'
+import { useSimulationStore } from '@/stores/use-simulation-store'
+
+const noopSubscribe = () => () => {}
 
 export default function SimulationResultPage() {
   const router = useRouter()
   const { user, isLoading, initialize, billingStatus } = useAuthStore()
-  const { activeSession, setPracticeConfig, updatePracticeConfig } = useActiveSessionStore()
+  const { activeSession } = useActiveSessionStore()
   const [isRetryStarting, setIsRetryStarting] = useState(false)
-  const [hasMounted, setHasMounted] = useState(false)
+  const [retryError, setRetryError] = useState<string | null>(null)
+  // false en el servidor y durante la hidratación; true en el cliente (el resultado vive en localStorage).
+  const hasMounted = useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  )
   const [upgradeModalReason, setUpgradeModalReason] = useState<'attempts' | 'autogenerations' | 'minutes' | null>(null)
+  const retry = useRef<{ started: Promise<boolean> | null; loaderDone: boolean }>({ started: null, loaderDone: false })
 
+  const goToSimulationWhenReady = useCallback(async () => {
+    const ok = await retry.current.started
+    if (!retry.current.loaderDone) return
+    if (ok) {
+      router.push('/simulation')
+    } else {
+      setRetryError(useSimulationStore.getState().errorMessage ?? 'No se pudo iniciar el reintento.')
+      setIsRetryStarting(false)
+    }
+  }, [router])
+
+  // El servidor reutiliza el escenario de la sesión: el nuevo intento se suma como n+1.
   const handleRetryFromResults = useCallback(() => {
     if (!activeSession) return
-
-    const latestContext = activeSession.simulations[activeSession.simulations.length - 1]?.context
-    const retryConfig: PracticeConfig = {
-      context: latestContext?.salesContext || activeSession.context,
-      prospect: latestContext?.prospectDescription || activeSession.prospect,
-      prospectName: latestContext?.prospectName || activeSession.prospect || 'Prospecto',
-      prospectRole: latestContext?.prospectRole || '',
-      prospectCompany: latestContext?.prospectCompany || '',
-      prospectGender: 'unknown',
-      voiceName: activeSession.voiceName,
-      advancedSelections: activeSession.advancedSelections || {
-        modo: 'Ciclo Completo',
-        tono: 'Perfil Real',
-      },
-    }
-
-    setPracticeConfig(retryConfig)
+    setRetryError(null)
+    retry.current = { started: startPractice({ sessionId: activeSession.id }), loaderDone: false }
+    void retry.current.started?.then(() => goToSimulationWhenReady())
     setIsRetryStarting(true)
-    void startGeminiSessionInBackground(retryConfig, updatePracticeConfig, () => setUpgradeModalReason('attempts'))
-  }, [activeSession, setPracticeConfig, updatePracticeConfig])
+  }, [activeSession, goToSimulationWhenReady])
 
   useEffect(() => {
     initialize()
   }, [initialize])
-
-  useEffect(() => {
-    setHasMounted(true)
-    try {
-      const reason = window.sessionStorage.getItem('closer.upgrade.reason')
-      if (reason === 'attempts' || reason === 'autogenerations' || reason === 'minutes') {
-        setUpgradeModalReason(reason)
-        window.sessionStorage.removeItem('closer.upgrade.reason')
-      }
-    } catch {
-      // ignore storage failures
-    }
-  }, [])
 
   useEffect(() => {
     if (!isLoading && !user) router.replace(routes.login)
@@ -81,7 +74,12 @@ export default function SimulationResultPage() {
   if (isRetryStarting) {
     return (
       <main className="m-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--brand-light-50)] p-0">
-        <SetupLoadingScreen onComplete={() => router.push('/simulation')} />
+        <SetupLoadingScreen
+          onComplete={() => {
+            retry.current.loaderDone = true
+            void goToSimulationWhenReady()
+          }}
+        />
       </main>
     )
   }
@@ -110,6 +108,11 @@ export default function SimulationResultPage() {
 
   return (
     <main className="flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--brand-light-50)] selection:bg-[var(--brand-blue-100)] selection:text-[var(--brand-blue-700)]">
+      {retryError && (
+        <p role="alert" className="typo-body border-b border-red-200 bg-red-50 px-6 py-3 text-center text-red-600">
+          {retryError}
+        </p>
+      )}
       <ResultsDashboard
         recentSession={activeSession}
         onBack={() => router.push('/setup')}

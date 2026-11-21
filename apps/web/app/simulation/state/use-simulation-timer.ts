@@ -1,19 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-export function useSimulationTimer(isPaused: boolean) {
+/**
+ * Cronómetro de la llamada. Corre solo mientras `isRunning` (conectado y sin analizar):
+ * en el MVP arrancaba al montar la página y seguía corriendo aunque la conexión fallara.
+ * Al llegar a `limitSeconds` llama a `onLimit` una sola vez.
+ */
+export function useSimulationTimer(isRunning: boolean, limitSeconds: number, onLimit: () => void) {
   const [seconds, setSeconds] = useState(0)
+  const secondsRef = useRef(0)
+  const onLimitRef = useRef(onLimit)
+  const limitReached = useRef(false)
 
   useEffect(() => {
-    if (isPaused) {
-      return
-    }
+    onLimitRef.current = onLimit
+  }, [onLimit])
 
+  useEffect(() => {
+    if (!isRunning) return
     const interval = window.setInterval(() => {
-      setSeconds((prev) => prev + 1)
+      secondsRef.current += 1
+      setSeconds(secondsRef.current)
+      if (!limitReached.current && secondsRef.current >= limitSeconds) {
+        limitReached.current = true
+        window.clearInterval(interval)
+        onLimitRef.current()
+      }
     }, 1000)
-
     return () => window.clearInterval(interval)
-  }, [isPaused])
+  }, [isRunning, limitSeconds])
 
   return { seconds }
 }

@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/mocks/supabase-client'
+import { createClient } from '@/lib/auth/auth-client'
+import { resolvePostLoginRoute } from '@/lib/auth/post-login'
 import { routes } from '@/lib/routes'
 import { AppIcon } from '@/components/brand/app-icon'
 
@@ -32,16 +33,14 @@ export default function LoginPage() {
         return
       }
 
-      const onboardingDone = Boolean(user.user_metadata?.onboarding_completed)
-      router.replace(onboardingDone ? routes.setup : routes.onboarding)
+      router.replace(await resolvePostLoginRoute())
     }
 
     checkUser()
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
       if (session?.user) {
-        const onboardingDone = Boolean(session.user.user_metadata?.onboarding_completed)
-        router.replace(onboardingDone ? routes.setup : routes.onboarding)
+        void resolvePostLoginRoute().then((route) => router.replace(route))
       }
     })
 
@@ -100,19 +99,13 @@ export default function LoginPage() {
       return
     }
 
-    const { data: { user } } = await supabase.auth.getUser()
-    const onboardingDone = user?.user_metadata?.onboarding_completed
+    const nextRoute = await resolvePostLoginRoute()
 
     setStep('initial')
     setEmail('')
     setToken('')
     setMessage({ text: '', type: '' })
-    
-    if (onboardingDone) {
-      router.push(routes.setup)
-    } else {
-      router.push(routes.onboarding)
-    }
+    router.push(nextRoute)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

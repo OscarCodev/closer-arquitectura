@@ -176,6 +176,7 @@ export class ProspectSummaryDto {
   @ApiProperty() name: string
   @ApiProperty() role: string
   @ApiProperty() company: string
+  @ApiProperty({ description: 'Descripción libre del prospecto' }) description: string
 }
 
 export class StartSimulationResponseDto {

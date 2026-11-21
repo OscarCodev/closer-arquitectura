@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AppIcon } from '@/components/brand/app-icon'
 import { UpgradePlanModal } from '@/components/billing/upgrade-plan-modal'
-import { createClient } from '@/mocks/supabase-client'
 import { useActiveSessionStore } from '@/stores/use-active-session-store'
-import { getPlanLimits } from '@/lib/billing/plan'
+import { useSimulationStore } from '@/stores/use-simulation-store'
+import { startPractice, type StartPracticeInput } from '@/lib/practice/start-practice'
 import { useAdvancedOptions } from './state/use-advanced-options'
 import { getInitialTabFromQuery } from './state/setup-initializers'
 import { usePracticeForm } from './state/use-practice-form'
@@ -14,10 +14,7 @@ import { useProfileManager } from './state/use-profile-manager'
 import { useSessionManager } from './state/use-session-manager'
 import { useSetupAuth } from './state/use-setup-auth'
 import { useSetupModals } from './state/use-setup-modals'
-import { useSimulationLauncher, resolveRetryPayloadFromSession } from './state/use-simulation-launcher'
-import { normalizeStructuredValue } from '@/lib/utils/normalize'
 import type { SavedProfile, TabType } from './types/setup-types'
-import type { PracticeConfig } from '@/stores/use-active-session-store'
 import { ProfilesLibraryTab } from './ui/profiles-library-tab'
 import { ProgressDashboard } from './ui/progress-dashboard'
 import { ResultsDashboard } from './ui/results-dashboard'
@@ -30,34 +27,26 @@ import { ContactSupportModal } from './ui/contact-support-modal'
 import { SignOutConfirmModal } from './ui/signout-confirm-modal'
 
 export default function SetupPage() {
-  const supabase = createClient()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>(getInitialTabFromQuery)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedProfile, setSelectedProfile] = useState<SavedProfile | null>(null)
   const [upgradeModalReason, setUpgradeModalReason] = useState<'attempts' | 'autogenerations' | 'minutes' | null>(null)
+  const [practiceError, setPracticeError] = useState<string | null>(null)
+  /** La pantalla de carga y el inicio en el servidor corren en paralelo; se navega cuando ambos terminan. */
+  const launch = useRef<{ started: Promise<boolean> | null; loaderDone: boolean }>({ started: null, loaderDone: false })
 
   const { authLoading, user, onboardingProfile, billingStatus, refreshOnboardingProfile, handleSignOut } = useSetupAuth()
   const sessions = useSessionManager({ userId: user?.id, authReady: !authLoading })
   const profiles = useProfileManager({ userId: user?.id, authReady: !authLoading })
   const advanced = useAdvancedOptions()
-  const planLimits = getPlanLimits(billingStatus?.plan)
-  const openUpgradeModal = (reason: 'attempts' | 'autogenerations' | 'minutes') => setUpgradeModalReason(reason)
   const closeUpgradeModal = () => setUpgradeModalReason(null)
 
-  const form = usePracticeForm({
-    onboardingProfile,
-    onUpgradeRequired: () => openUpgradeModal('autogenerations'),
-  })
-  const { setPracticeConfig, updatePracticeConfig, setActiveSession, clearActiveSession } = useActiveSessionStore()
+  const form = usePracticeForm()
+  const { clearActiveSession } = useActiveSessionStore()
   const selectedRecentSession = sessions.recentSessions[sessions.selectedRecentSessionIdx]
 
-  const modals = useSetupModals({ supabase, refreshOnboardingProfile, handleSignOut })
-  const launcher = useSimulationLauncher({
-    updatePracticeConfig,
-    setSavedProfiles: profiles.setSavedProfiles,
-    onUpgradeRequired: () => openUpgradeModal('attempts'),
-  })
+  const modals = useSetupModals({ refreshOnboardingProfile, handleSignOut })
 
   const handleSelectProfile = (profile: SavedProfile) => {
     form.setProspect(profile.prospect)
@@ -66,114 +55,74 @@ export default function SetupPage() {
     profiles.onCloseProfileSelector()
   }
 
-  const handleStartPractice = () => {
-    if (!form.isFormValid) return
-
-    if (billingStatus && billingStatus.simulationsUsed >= planLimits.simulationsPerMonth) {
-      openUpgradeModal('attempts')
-      return
-    }
-
-    let prospectName = form.getProfileName(form.prospect, profiles.savedProfiles.length)
-    let prospectRole = ''
-    let prospectCompany = ''
-    let selectedProfileId: string | undefined
-
-    clearActiveSession()
-
-    if (selectedProfile) {
-      // Profile pre-selected from "Elegir perfil" — use its structured data
-      prospectName = selectedProfile.personName || prospectName
-      selectedProfileId = selectedProfile.id
-
-      if (selectedProfile.roleCompany) {
-        const firstEnIdx = selectedProfile.roleCompany.indexOf(' en ')
-        if (firstEnIdx !== -1) {
-          prospectRole = selectedProfile.roleCompany.substring(0, firstEnIdx).trim()
-          prospectCompany = selectedProfile.roleCompany.substring(firstEnIdx + 4).trim()
-        } else {
-          prospectRole = selectedProfile.roleCompany.trim()
-        }
-      }
+  const goToSimulationWhenReady = async () => {
+    const ok = await launch.current.started
+    if (!launch.current.loaderDone) return
+    if (ok) {
+      router.push('/simulation')
     } else {
-      // Free-text entry — save profile and fire async extraction
-      const newProfile: SavedProfile = {
-        id: `${Date.now()}`,
-        name: prospectName,
-        prospect: form.prospect.trim(),
-        context: form.context.trim(),
-        createdAt: new Date().toLocaleDateString('es-ES', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        }),
-      }
-      profiles.setSavedProfiles((prev) => [newProfile, ...prev].slice(0, 20))
-      profiles.onCloseProfileSelector()
-
-      // Fire async extraction during the loading screen (best-effort)
-      launcher.extractProfileAsync(newProfile.id, form.prospect.trim())
+      setPracticeError(useSimulationStore.getState().errorMessage ?? 'No se pudo iniciar la práctica.')
+      form.cancelPractice()
     }
+  }
 
-    const finalConfig: PracticeConfig = {
-      context: form.context.trim(),
-      prospect: form.prospect.trim(),
-      prospectName,
-      prospectRole,
-      prospectCompany,
-      prospectGender: 'unknown',
-      voiceName: undefined,
-      advancedSelections: advanced.advancedSelections,
-      selectedProfileId,
-    }
-
-    setPracticeConfig(finalConfig)
-
-    // Start Gemini session in background — runs during the loading screen (~4.8s)
-    // so by the time the user reaches /simulation, the AI is already connected
-    launcher.startGeminiSessionInBackground(finalConfig)
-
+  const launchPractice = (input: StartPracticeInput) => {
+    setPracticeError(null)
+    clearActiveSession()
+    launch.current = { started: startPractice(input), loaderDone: false }
+    void launch.current.started?.then(() => goToSimulationWhenReady())
     form.startPractice()
   }
 
+  const handleStartPractice = () => {
+    if (!form.isFormValid) return
+
+    let prospectName = ''
+    let prospectRole = ''
+    let prospectCompany = ''
+
+    if (selectedProfile) {
+      // Prospecto elegido de la biblioteca: se envían sus datos ya estructurados.
+      prospectName = selectedProfile.personName || ''
+      const [role, ...company] = (selectedProfile.roleCompany ?? '').split(' en ')
+      prospectRole = role?.trim() ?? ''
+      prospectCompany = company.join(' en ').trim()
+    } else {
+      // Texto libre: se guarda en la biblioteca (el servidor extrae nombre y cargo).
+      profiles.onCloseProfileSelector()
+      void profiles.createProfile({
+        name: form.getProfileName(form.prospect, profiles.savedProfiles.length),
+        prospect: form.prospect.trim(),
+        context: form.context.trim(),
+      })
+    }
+
+    launchPractice({
+      context: form.context.trim(),
+      prospect: form.prospect.trim(),
+      prospectName: prospectName || undefined,
+      prospectRole: prospectRole || undefined,
+      prospectCompany: prospectCompany || undefined,
+      advancedSelections: advanced.advancedSelections,
+    })
+  }
+
+  // Reintento: el servidor reutiliza el escenario guardado, los intentos se acumulan (1/n, 2/n…).
   const handleRetryFromResults = () => {
     if (!selectedRecentSession) return
-
-    if (billingStatus && billingStatus.simulationsUsed >= planLimits.simulationsPerMonth) {
-      openUpgradeModal('attempts')
-      return
-    }
-
-    // Keep retries within the same session item so attempts stack as 1/n, 2/n, etc.
-    setActiveSession(selectedRecentSession)
-
-    const retryPayload = resolveRetryPayloadFromSession(selectedRecentSession)
-
-    form.setContext(retryPayload.contextValue)
-    form.setProspect(retryPayload.prospectValue)
     setSelectedProfile(null)
-
-    const retryConfig: PracticeConfig = {
-      context: retryPayload.contextValue,
-      prospect: retryPayload.prospectValue,
-      prospectName: retryPayload.prospectName || retryPayload.prospectValue || 'Prospecto',
-      prospectRole: retryPayload.prospectRole,
-      prospectCompany: retryPayload.prospectCompany,
-      prospectGender: 'unknown',
-      voiceName: normalizeStructuredValue(selectedRecentSession.voiceName),
-      advancedSelections: selectedRecentSession.advancedSelections || advanced.advancedSelections,
-    }
-
-    setPracticeConfig(retryConfig)
-    launcher.extractProfileAsync(`retry-${Date.now()}`, retryPayload.prospectValue)
-    launcher.startGeminiSessionInBackground(retryConfig)
-    form.startPractice()
+    launchPractice({ sessionId: selectedRecentSession.id })
   }
 
   if (form.isStartingPractice) {
     return (
       <main className="m-0 flex h-[100dvh] w-screen flex-col overflow-hidden bg-[var(--brand-light-50)] p-0">
-        <SetupLoadingScreen onComplete={() => router.push('/simulation')} />
+        <SetupLoadingScreen
+          onComplete={() => {
+            launch.current.loaderDone = true
+            void goToSimulationWhenReady()
+          }}
+        />
       </main>
     )
   }
@@ -280,15 +229,9 @@ export default function SetupPage() {
             onSetAdvancedTab={advanced.onSetAdvancedTab}
             onAdvancedSelect={advanced.onAdvancedSelect}
             onAdvancedPreview={advanced.onAdvancedPreview}
-            onApplyAutofill={async () => {
-              if (billingStatus && billingStatus.autogenerationsUsed >= planLimits.autogenerationsPerMonth) {
-                openUpgradeModal('autogenerations')
-                return
-              }
-
-              await form.applyAutofill()
-            }}
+            onApplyAutofill={form.applyAutofill}
             onStartPractice={handleStartPractice}
+            errorMessage={practiceError}
           />
         )}
 
@@ -296,8 +239,10 @@ export default function SetupPage() {
           <ProfilesLibraryTab
             savedProfiles={profiles.savedProfiles}
             editingProfile={profiles.editingProfile}
-            setSavedProfiles={profiles.setSavedProfiles}
             setEditingProfile={profiles.setEditingProfile}
+            onSaveProfile={(profile) => void profiles.updateProfile(profile)}
+            onDeleteProfile={(profileId) => void profiles.deleteProfile(profileId)}
+            errorMessage={profiles.profilesError}
             onGoToSetup={() => setActiveTab('setup')}
           />
         )}
@@ -323,7 +268,9 @@ export default function SetupPage() {
         />
       )}
 
+      {/* La key reinicia el borrador cada vez que se abre el modal. */}
       <OnboardingSettingsModal
+        key={modals.settingsOpen ? "settings-open" : "settings-closed"}
         open={modals.settingsOpen}
         initialProfile={onboardingProfile || {
           firstName: '',

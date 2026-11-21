@@ -1,24 +1,25 @@
 /**
- * Module-level singleton that holds the active GeminiLiveAudio instance.
- * Created in the setup loading screen so the session is already connected
- * (or connecting) by the time the simulation page mounts.
+ * Llamada de voz activa (singleton de módulo). Se crea durante la pantalla de carga de /setup,
+ * así cuando /simulation se monta el prospecto ya está conectado (preconexión).
  */
+import type { VoiceSession } from '@/lib/voice/voice-session'
 
-import type { GeminiLiveAudio } from '@/mocks/live-audio'
+let instance: VoiceSession | null = null
 
-let _instance: GeminiLiveAudio | null = null
-
-export function setActiveGeminiSession(instance: GeminiLiveAudio | null) {
-  _instance = instance
+export function setActiveGeminiSession(session: VoiceSession | null) {
+  instance = session
 }
 
-export function getActiveGeminiSession(): GeminiLiveAudio | null {
-  return _instance
+export function getActiveGeminiSession(): VoiceSession | null {
+  return instance
 }
 
 export function clearActiveGeminiSession() {
-  if (_instance) {
-    try { _instance.disconnect() } catch { /* ignore */ }
-    _instance = null
+  if (!instance) return
+  try {
+    instance.disconnect()
+  } catch {
+    // ignorar
   }
+  instance = null
 }

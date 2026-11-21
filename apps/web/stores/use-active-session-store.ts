@@ -8,22 +8,29 @@ export type PracticeConfig = {
   prospectName: string
   prospectRole: string
   prospectCompany: string
-  prospectGender?: 'female' | 'male' | 'unknown'
   voiceName?: string
   advancedSelections: Record<AdvancedTab, string>
-  selectedProfileId?: string
+}
+
+/** Intento en curso: lo emite el backend al iniciar la llamada y lo exige para evaluarla. */
+export type CurrentSimulation = {
+  simulationId: string
+  sessionId: string
+  maxCallMinutes: number
 }
 
 type ActiveSessionStore = {
   ownerUserId: string | null
   practiceConfig: PracticeConfig | null
+  currentSimulation: CurrentSimulation | null
+  /** Sesión que se muestra en /simulation/result (la última evaluada). */
   activeSession: RecentSession | null
   syncUserScope: (userId: string | null) => void
   setPracticeConfig: (config: PracticeConfig) => void
   updatePracticeConfig: (update: Partial<PracticeConfig>) => void
+  setCurrentSimulation: (simulation: CurrentSimulation | null) => void
   setActiveSession: (session: RecentSession) => void
   clearActiveSession: () => void
-  clearPracticeConfig: () => void
 }
 
 export const useActiveSessionStore = create<ActiveSessionStore>()(
@@ -31,37 +38,21 @@ export const useActiveSessionStore = create<ActiveSessionStore>()(
     (set, get) => ({
       ownerUserId: null,
       practiceConfig: null,
+      currentSimulation: null,
       activeSession: null,
       syncUserScope: (userId) => {
-        const currentOwner = get().ownerUserId
-
-        if (!userId) {
-          set({ ownerUserId: null, practiceConfig: null, activeSession: null })
-          return
-        }
-
-        if (!currentOwner) {
-          set({ ownerUserId: userId, practiceConfig: null, activeSession: null })
-          return
-        }
-
-        if (currentOwner !== userId) {
-          set({ ownerUserId: userId, practiceConfig: null, activeSession: null })
+        // Al cambiar de cuenta se descarta todo lo de la cuenta anterior.
+        if (get().ownerUserId !== userId) {
+          set({ ownerUserId: userId, practiceConfig: null, currentSimulation: null, activeSession: null })
         }
       },
       setPracticeConfig: (config) => set({ practiceConfig: config }),
       updatePracticeConfig: (update) =>
-        set((state) =>
-          state.practiceConfig
-            ? { practiceConfig: { ...state.practiceConfig, ...update } }
-            : state,
-        ),
+        set((state) => (state.practiceConfig ? { practiceConfig: { ...state.practiceConfig, ...update } } : state)),
+      setCurrentSimulation: (simulation) => set({ currentSimulation: simulation }),
       setActiveSession: (session) => set({ activeSession: session }),
       clearActiveSession: () => set({ activeSession: null }),
-      clearPracticeConfig: () => set({ practiceConfig: null }),
     }),
-    {
-      name: 'closer.active-session.v1',
-    },
+    { name: 'closer.active-session.v2' },
   ),
 )

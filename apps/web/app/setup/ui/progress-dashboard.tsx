@@ -230,6 +230,19 @@ function ActivityTracker({ data }: { data: ActivityHeatmapPoint[] }) {
   )
 }
 
+/** Flecha de tendencia (definida fuera del render para no recrearla en cada render). */
+function TrendArrow({ value, inverted = false, suffix = '%' }: { value: number; inverted?: boolean; suffix?: string }) {
+  const isPositive = inverted ? value < 0 : value > 0
+  if (value === 0 || !Number.isFinite(value)) {
+    return <span className="inline-flex items-center text-[10px] font-bold text-[var(--brand-gray-400)]">= 0{suffix}</span>
+  }
+  return (
+    <span className={`inline-flex items-center text-[10px] font-bold ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>
+      {isPositive ? '▲' : '▼'} {Math.abs(value)}{suffix}
+    </span>
+  )
+}
+
 export function ProgressDashboard({ sessions, consistencyData, consistencyStreakDays }: ProgressDashboardProps) {
   const [animatedValues, setAnimatedValues] = useState({ precision: 0, errors: 0, listen: 0 })
 
@@ -322,20 +335,9 @@ export function ProgressDashboard({ sessions, consistencyData, consistencyStreak
       })
       if (p < 1) requestAnimationFrame(step)
     }
-    requestAnimationFrame(step)
-  }, [])
-
-  const TrendArrow = ({ value, inverted = false, suffix = '%' }: { value: number; inverted?: boolean; suffix?: string }) => {
-    const isPositive = inverted ? value < 0 : value > 0
-    if (value === 0 || !Number.isFinite(value)) {
-      return <span className="inline-flex items-center text-[10px] font-bold text-[var(--brand-gray-400)]">= 0{suffix}</span>
-    }
-    return (
-      <span className={`inline-flex items-center text-[10px] font-bold ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>
-        {isPositive ? '▲' : '▼'} {Math.abs(value)}{suffix}
-      </span>
-    )
-  }
+    const frame = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(frame)
+  }, [avgPrecision, avgErrors, avgListenRatio])
 
   return (
     <section className="flex flex-1 overflow-auto bg-[var(--brand-light-50)] p-6 justify-center">

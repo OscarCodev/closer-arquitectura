@@ -1,4 +1,4 @@
-import type { ConnectionStatus } from '@/mocks/live-audio'
+import type { ConnectionStatus } from '@/lib/voice/voice-session'
 import { SIMULATION_COPY } from '../config/simulation-config'
 import type { SimulationProspect } from '../types/simulation-types'
 

@@ -1,18 +1,17 @@
 'use client'
 
-import { mockFetch } from '@/mocks/api'
 import { useCallback, useState } from 'react'
-import type { SupabaseClient } from '@/mocks/supabase-client'
+import { closerApi } from '@/lib/api/closer-api'
+import { ApiError } from '@/lib/api/http'
 import { SUPPORT_EMAIL } from '@/lib/billing/plan'
 import type { OnboardingProfile } from '../types/setup-types'
 
 interface UseSetupModalsOptions {
-  supabase: SupabaseClient
   refreshOnboardingProfile: () => Promise<void>
   handleSignOut: () => Promise<void>
 }
 
-export function useSetupModals({ supabase, refreshOnboardingProfile, handleSignOut }: UseSetupModalsOptions) {
+export function useSetupModals({ refreshOnboardingProfile, handleSignOut }: UseSetupModalsOptions) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settingsSaving, setSettingsSaving] = useState(false)
   const [settingsError, setSettingsError] = useState('')
@@ -38,38 +37,16 @@ export function useSetupModals({ supabase, refreshOnboardingProfile, handleSignO
       setContactSuccess('')
 
       try {
-        const res = await mockFetch('/api/support/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            subject: payload.subject,
-            message: payload.message,
-            pagePath: window.location.pathname,
-          }),
-        })
-
-        if (!res.ok) {
-          if (res.status === 429) {
-            const data = (await res.json().catch(() => ({}))) as { retryAfterSeconds?: number; error?: string }
-            const retrySeconds = Number.isFinite(data.retryAfterSeconds)
-              ? Math.max(1, Math.floor(data.retryAfterSeconds as number))
-              : 60
-            setContactError(data.error || `Límite temporal alcanzado. Reintenta en ${retrySeconds}s.`)
-            setContactSending(false)
-            return
-          }
-
+        await closerApi.sendSupportMessage(payload.subject, payload.message, window.location.pathname)
+        setContactSuccess('Mensaje enviado. Te responderemos por correo lo antes posible.')
+      } catch (error) {
+        if (error instanceof ApiError && (error.isRateLimited || error.status === 400)) {
+          setContactError(error.message)
+        } else {
           openMailFallback(payload.subject, payload.message)
           setContactError('No pudimos enviarlo desde la app. Abrimos tu correo como alternativa.')
-          setContactSending(false)
-          return
         }
-
-        setContactSuccess('Mensaje enviado. Te responderemos por correo lo antes posible.')
-        setContactSending(false)
-      } catch {
-        openMailFallback(payload.subject, payload.message)
-        setContactError('No pudimos enviarlo desde la app. Abrimos tu correo como alternativa.')
+      } finally {
         setContactSending(false)
       }
     },
@@ -93,20 +70,12 @@ export function useSetupModals({ supabase, refreshOnboardingProfile, handleSignO
         phone: profile.phone.trim(),
       }
 
-      const payload: Record<string, unknown> = {
-        onboarding_completed: true,
-        onboarding: normalizedProfile,
-      }
-
-      if (normalizedProfile.firstName) {
-        payload.firstName = normalizedProfile.firstName
-        payload.full_name = normalizedProfile.firstName
-      }
-
-      const { error } = await supabase.auth.updateUser({ data: payload })
-      if (error) {
+      // Corrige el bug del MVP: antes se guardaba en user_metadata pero se leía de otra tabla.
+      try {
+        await closerApi.saveOnboarding(normalizedProfile)
+      } catch (error) {
         setSettingsSaving(false)
-        setSettingsError('No pudimos guardar la configuración. Inténtalo de nuevo.')
+        setSettingsError(error instanceof ApiError ? error.message : 'No pudimos guardar la configuración. Inténtalo de nuevo.')
         return
       }
 
@@ -114,7 +83,7 @@ export function useSetupModals({ supabase, refreshOnboardingProfile, handleSignO
       setSettingsSaving(false)
       setSettingsOpen(false)
     },
-    [refreshOnboardingProfile, supabase.auth],
+    [refreshOnboardingProfile],
   )
 
   const handleConfirmSignOut = useCallback(async () => {
