@@ -12,11 +12,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.config.js --runInBand",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "test:integration": "jest --config ./test/jest-integration.config.js --runInBand",
+    "test:cov:all": "jest --config ./jest.coverage.config.js --runInBand --coverage"
   },
   "dependencies": {
     "@google/genai": "^3.6.1",
@@ -31,7 +32,7 @@
     "class-validator": "^0.15.1",
     "helmet": "^8.3.0",
     "ioredis": "^5.11.1",
-    "jose": "^6.2.18",
+    "jose": "^5.10.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },

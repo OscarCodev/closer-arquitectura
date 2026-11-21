@@ -4,6 +4,7 @@ import { CACHE } from './application/ports/cache.port'
 import { RATE_LIMITER } from './application/ports/rate-limiter.port'
 import { RedisCacheAdapter } from './infrastructure/cache/redis-cache.adapter'
 import { redisProvider, REDIS_CLIENT } from './infrastructure/cache/redis.provider'
+import { RedisShutdown } from './infrastructure/cache/redis-shutdown'
 import { AppConfig } from './infrastructure/config/app-config.service'
 import { validateEnv } from './infrastructure/config/env'
 import { PrismaService } from './infrastructure/database/prisma.service'
@@ -17,6 +18,7 @@ import { RedisRateLimiterAdapter } from './infrastructure/rate-limit/redis-rate-
     AppConfig,
     PrismaService,
     redisProvider,
+    RedisShutdown,
     { provide: CACHE, useClass: RedisCacheAdapter },
     { provide: RATE_LIMITER, useClass: RedisRateLimiterAdapter },
   ],

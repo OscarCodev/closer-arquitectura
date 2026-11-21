@@ -314,6 +314,8 @@ export function SetupPracticeTab({
                   type="button"
                   onClick={onApplyAutofill}
                   disabled={autofillStatus !== 'idle'}
+                  aria-label="Autogenerar escenario"
+                  title="Autogenerar escenario"
                   className={`flex h-[44px] items-center justify-center rounded-xl px-3 font-semibold transition-all duration-300 ${
                     autofillStatus === 'loading'
                       ? 'w-auto cursor-wait bg-[var(--brand-light-200)] text-[var(--brand-gray-500)]'

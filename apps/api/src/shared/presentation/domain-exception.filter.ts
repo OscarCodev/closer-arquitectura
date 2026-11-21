@@ -53,6 +53,16 @@ export class DomainExceptionFilter implements ExceptionFilter {
       return response.status(status).json({ error: message, code: `http_${status}` })
     }
 
+    // Base de datos inalcanzable (Prisma P1001/P1002, pool agotado P2024): es temporal, se informa como 503.
+    const prismaCode = (exception as { code?: unknown })?.code
+    if (prismaCode === 'P1001' || prismaCode === 'P1002' || prismaCode === 'P2024') {
+      this.logger.warn(`Base de datos no disponible (${prismaCode})`)
+      response.setHeader('Retry-After', '5')
+      return response
+        .status(HttpStatus.SERVICE_UNAVAILABLE)
+        .json({ error: 'El servicio no está disponible en este momento. Intenta de nuevo en unos segundos.', code: 'service_unavailable' })
+    }
+
     this.logger.error(exception instanceof Error ? exception.stack : String(exception))
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error interno', code: 'internal_error' })
   }

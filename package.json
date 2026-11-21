@@ -18,7 +18,9 @@
     "lint": "npm run lint -w apps/api && npm run lint -w apps/web",
     "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
     "test": "npm run test -w apps/api",
-    "test:cov": "npm run test:cov -w apps/api"
+    "test:cov": "npm run test:cov:all -w apps/api",
+    "test:integration": "npm run test:integration -w apps/api",
+    "test:e2e": "npm run test:e2e -w apps/web"
   },
   "engines": {
     "node": ">=20"

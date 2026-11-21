@@ -45,3 +45,14 @@ presentation/    controladores REST y DTOs (Swagger)
 ```
 
 ESLint impide que `domain` y `application` importen proveedores concretos (Prisma, Redis, Gemini).
+
+## Pruebas
+
+| Comando | Qué ejecuta |
+|---|---|
+| `npm test` | Pruebas unitarias del backend (dominio, casos de uso, adaptadores). No requiere Docker |
+| `npm run test:integration` | API completa contra PostgreSQL y Redis reales (requiere `npm run infra:up`) |
+| `npm run test:cov` | Unitarias + integración con reporte de cobertura en `apps/api/coverage/index.html` |
+| `npm run test:e2e` | Playwright en Chromium contra la web y la API (las levanta si no están corriendo) |
+
+Estrategia, resultados y matriz criterio → prueba: [docs/pruebas/matriz-pruebas.md](docs/pruebas/matriz-pruebas.md). Especificaciones: [docs/specs](docs/specs/README.md).
