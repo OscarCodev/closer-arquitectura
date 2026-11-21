@@ -62,6 +62,8 @@ model PracticeSession {
   id                  String   @id @default(uuid()) @db.Uuid
   userId              String   @map("user_id") @db.Uuid
   name                String   @db.VarChar(120)
+  /// true mientras el nombre sea automático: la primera evaluación lo reemplaza por el título sugerido.
+  nameIsAuto          Boolean  @default(true) @map("name_is_auto")
   voiceName           String?  @map("voice_name") @db.VarChar(40)
   prospect            String   @db.VarChar(1400)
   context             String   @db.VarChar(1400)
@@ -100,6 +102,8 @@ model Simulation {
   analysis        Json?
   transcript      String?
   failureReason   String?          @map("failure_reason") @db.VarChar(300)
+  /// Momento del último cambio de estado: permite recuperar evaluaciones EVALUATING que quedaron colgadas.
+  statusChangedAt DateTime         @default(now()) @map("status_changed_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   evaluatedAt     DateTime?        @map("evaluated_at")
 

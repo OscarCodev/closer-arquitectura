@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common'
 import { HealthModule } from './modules/health/health.module'
 import { IdentityModule } from './modules/identity/identity.module'
+import { PracticeModule } from './modules/practice/practice.module'
+import { ProfilesModule } from './modules/profiles/profiles.module'
+import { SupportModule } from './modules/support/support.module'
 import { SharedModule } from './shared/shared.module'
 
 /**
@@ -8,6 +11,6 @@ import { SharedModule } from './shared/shared.module'
  * domain → application → infrastructure / presentation (ADR-002).
  */
 @Module({
-  imports: [SharedModule, HealthModule, IdentityModule],
+  imports: [SharedModule, HealthModule, IdentityModule, ProfilesModule, PracticeModule, SupportModule],
 })
 export class AppModule {}

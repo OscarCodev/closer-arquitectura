@@ -43,7 +43,7 @@ export class Env {
   GEMINI_TEXT_MODEL = 'gemini-2.5-flash-lite'
 
   @IsString()
-  GEMINI_LIVE_MODEL = 'gemini-2.5-flash-native-audio-preview-09-2025'
+  GEMINI_LIVE_MODEL = 'gemini-2.5-flash-native-audio-latest'
 
   @IsOptional()
   @IsString()
