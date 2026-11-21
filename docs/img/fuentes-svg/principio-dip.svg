@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="880" viewBox="0 0 1560 880">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="880" fill="#FFFFFF"/>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">SOLID · Inversión de dependencias</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Propuesta de diseño · Closer</text>
+<path d="M780.0 275 L780.0 325.0 L780.0 325.0 L780.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="715.0" y="290.0" width="130" height="30" fill="white"/>
+<text x="780.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Depende de</text>
+<path d="M540.0 605 L540.0 555.0 L780.0 555.0 L780.0 505" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="595.0" y="520.0" width="130" height="30" fill="white"/>
+<text x="660.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<path d="M1020.0 605 L1020.0 555.0 L780.0 555.0 L780.0 505" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="835.0" y="520.0" width="130" height="30" fill="white"/>
+<text x="900.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluarSesion</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">No importa clientes de proveedores</text>
+<rect x="575.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluadorConversacion</text>
+<text x="780.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Contrato de aplicación</text>
+<rect x="335.0" y="605" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluadorGemini</text>
+<text x="540.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Adaptador real</text>
+<rect x="815.0" y="605" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluadorSimulado</text>
+<text x="1020.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Doble de prueba</text>
+<text x="55" y="850" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">Flecha continua: relación indicada · Flecha discontinua: implementa contrato</text>
+</svg>

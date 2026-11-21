@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1340" viewBox="0 0 1560 1340">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="1340" fill="#FFFFFF"/><path d="M335 440 H25 V795 H300 V835 M1225 440 H1535 V795 H780 V835 M1535 795 H1260 V835" fill="none" stroke="#475569" stroke-width="2"/><path d="M300 810 V835" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><path d="M780 810 V835" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><path d="M1260 810 V835" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><text x="55" y="780" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">FinalizarSesion usa su repositorio</text><text x="825" y="780" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">EvaluarSesion usa repositorio y evaluador</text>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">Código · Sesiones y Evaluación</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Propuesta de diseño · Closer</text>
+<path d="M780.0 275 L780.0 325.0 L540.0 325.0 L540.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="617.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="660.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M540.0 505 L540.0 555.0 L540.0 555.0 L540.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="458.5" y="520.0" width="163" height="30" fill="white"/>
+<text x="540.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Valida estado</text>
+<path d="M1020.0 505 L1020.0 555.0 L1020.0 555.0 L1020.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="922.0" y="520.0" width="196" height="30" fill="white"/>
+<text x="1020.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Valida resultado</text>
+<path d="M300.0 1065 L300.0 1015.0 L300.0 1015.0 L300.0 965" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="235.0" y="980.0" width="130" height="30" fill="white"/>
+<text x="300.0" y="1003.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<path d="M780.0 1065 L780.0 1015.0 L780.0 1015.0 L780.0 965" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="715.0" y="980.0" width="130" height="30" fill="white"/>
+<text x="780.0" y="1003.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<path d="M1260.0 1065 L1260.0 1015.0 L1260.0 1015.0 L1260.0 965" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="1195.0" y="980.0" width="130" height="30" fill="white"/>
+<text x="1260.0" y="1003.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#DBEAFE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">ControladorSesiones</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">finalizar(usuario, sesionId)</text>
+<rect x="335.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">FinalizarSesion</text>
+<text x="540.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">ejecutar(usuario, sesionId)</text>
+<rect x="815.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluarSesion</text>
+<text x="1020.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">ejecutar(usuario, sesionId)</text>
+<rect x="335.0" y="605" width="410" height="130" rx="14" fill="#FEF3C7" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">SesionPractica</text>
+<text x="540.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">estado · propietario · transcripción</text>
+<text x="540.0" y="698" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">finalizar() / cancelar()</text>
+<rect x="815.0" y="605" width="410" height="130" rx="14" fill="#FEF3C7" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Evaluacion</text>
+<text x="1020.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">competencias · métricas</text>
+<text x="1020.0" y="698" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">validarResultado()</text>
+<rect x="95.0" y="835" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">«puerto» RepositorioSesiones</text>
+<text x="300.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">buscarPropia() / cerrarAtomico()</text>
+<rect x="575.0" y="835" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">«puerto» RepositorioEvaluaciones</text>
+<text x="780.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">reservarUnica() / completar()</text>
+<rect x="1055.0" y="835" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">«puerto» EvaluadorConversacion</text>
+<text x="1260.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">evaluar(transcripcion, rubrica)</text>
+<rect x="95.0" y="1065" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="1100" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">RepositorioSesionesSupabase</text>
+<text x="300.0" y="1133" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Implementación de persistencia</text>
+<rect x="575.0" y="1065" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="1100" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">RepositorioEvaluacionesSupabase</text>
+<text x="780.0" y="1133" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Unicidad y transacciones</text>
+<rect x="1055.0" y="1065" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="1100" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluadorGemini</text>
+<text x="1260.0" y="1133" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Normalización de análisis</text>
+<text x="55" y="1310" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">Vista resumida. Casos de uso emplean los puertos de su módulo; Evaluación consulta Sesiones por API pública.</text>
+</svg>

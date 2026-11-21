@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1110" viewBox="0 0 1560 1110">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="1110" fill="#FFFFFF"/><path d="M575 210 H25 V565 H1260 M300 565 V605 M780 565 V605 M1260 565 V605" fill="none" stroke="#475569" stroke-width="2"/><path d="M300 580 V605" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><path d="M780 580 V605" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><path d="M1260 580 V605" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/><text x="55" y="550" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">API REST invoca también Sesiones, Evaluación e Historial</text>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">Closer · Monolito modular en capas</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Propuesta de diseño · Closer</text>
+<path d="M780.0 275 L780.0 325.0 L300.0 325.0 L300.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="497.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="540.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M780.0 275 L780.0 325.0 L780.0 325.0 L780.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="737.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="780.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M780.0 275 L780.0 325.0 L1260.0 325.0 L1260.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="977.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="1020.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M300.0 735 L300.0 785.0 L780.0 785.0 L780.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="469.5" y="750.0" width="141" height="30" fill="white"/>
+<text x="540.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Usa puertos</text>
+<path d="M780.0 735 L780.0 785.0 L780.0 785.0 L780.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="709.5" y="750.0" width="141" height="30" fill="white"/>
+<text x="780.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Usa puertos</text>
+<path d="M1260.0 735 L1260.0 785.0 L780.0 785.0 L780.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="949.5" y="750.0" width="141" height="30" fill="white"/>
+<text x="1020.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Composición</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#DBEAFE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">API REST</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Identidad · validación · rutas</text>
+<rect x="95.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Usuarios y perfiles</text>
+<text x="300.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Perfil comercial</text>
+<rect x="575.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Escenarios y prospectos</text>
+<text x="780.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Contexto · buyer persona</text>
+<rect x="1055.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Planes y límites</text>
+<text x="1260.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Suscripción · reserva de cuota</text>
+<rect x="95.0" y="605" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Sesiones de práctica</text>
+<text x="300.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Inicio · conversación · cierre</text>
+<rect x="575.0" y="605" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Evaluación y coaching</text>
+<text x="780.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Métricas · recomendaciones</text>
+<rect x="1055.0" y="605" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Historial y progreso</text>
+<text x="1260.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Consultas y evolución</text>
+<rect x="575.0" y="835" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Adaptadores</text>
+<text x="780.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Persistencia · identidad · IA</text>
+<text x="780.0" y="928" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Pagos · notificaciones</text>
+<text x="55" y="1080" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">Separaciones lógicas dentro de un backend. Comunicación por contratos; no son microservicios.</text>
+</svg>

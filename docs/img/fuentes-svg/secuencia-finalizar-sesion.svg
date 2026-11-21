@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="1260" viewBox="0 0 1640 1260"><defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs><rect width="100%" height="100%" fill="white"/>
+<text x="820.0" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#0F172A">Secuencia · Finalizar y evaluar una sesión</text>
+<text x="820.0" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" fill="#0F172A">Camino exitoso · solicitudes autenticadas · evaluación fuera del audio</text>
+<rect x="5" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M110 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="110" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">Web</text>
+<rect x="285" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M390 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="390" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">API / casos de uso</text>
+<rect x="565" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M670 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="670" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">API Sesiones</text>
+<rect x="845" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M950 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="950" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">Repo. evaluaciones</text>
+<rect x="1125" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M1230 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="1230" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">EvaluadorGemini</text>
+<rect x="1405" y="125" width="210" height="70" rx="10" fill="#DBEAFE" stroke="#64748B"/><path d="M1510 195 V1150" stroke="#94A3B8" stroke-dasharray="8 7"/>
+<text x="1510" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">Gemini</text>
+<path d="M110 240 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="250.0" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">1. Finalizar sesión y enviar transcripción</text>
+<path d="M390 295 H670" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="530.0" y="283" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">2. Validar propiedad y persistir cierre atómico</text>
+<path d="M670 350 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="530.0" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">3. Sesión finalizada</text>
+<path d="M390 405 H110" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="250.0" y="393" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">4. Confirmar cierre</text>
+<path d="M110 460 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="250.0" y="448" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">5. Solicitar evaluación</text>
+<path d="M390 515 H670" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="530.0" y="503" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">6. Obtener sesión finalizada propia</text>
+<path d="M670 570 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="530.0" y="558" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">7. Instantánea de transcripción</text>
+<path d="M390 625 H950" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="670.0" y="613" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">8. Reservar evaluación única por sesión</text>
+<path d="M950 680 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="670.0" y="668" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">9. Reserva concedida</text>
+<path d="M390 735 H1230" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="810.0" y="723" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">10. Evaluar conversación mediante puerto</text>
+<path d="M1230 790 H1510" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="1370.0" y="778" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">11. Solicitar análisis</text>
+<path d="M1510 845 H1230" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="1370.0" y="833" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">12. Respuesta externa</text>
+<path d="M1230 900 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="810.0" y="888" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">13. Resultado normalizado</text>
+<path d="M390 955 H950" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="670.0" y="943" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">14. Validar y guardar COMPLETADA</text>
+<path d="M950 1010 H390" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="670.0" y="998" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">15. Guardado confirmado</text>
+<path d="M390 1065 H110" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+<text x="250.0" y="1053" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0F172A">16. Mostrar métricas y recomendaciones</text>
+<text x="820.0" y="1178" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#0F172A">Cierre repetido: devolver estado existente. Evaluación duplicada: devolver resultado o EN_PROCESO.</text>
+<text x="820.0" y="1215" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#0F172A">Error de IA: conservar conversación, registrar FALLIDA y permitir reintento controlado.</text>
+</svg>

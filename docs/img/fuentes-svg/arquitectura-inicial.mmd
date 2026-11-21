@@ -1,0 +1,37 @@
+flowchart LR
+    U["USUARIOS<br/>Vendedor · AE · SDR<br/>Emprendedor · Administrador"]
+    W["APLICACIÓN WEB<br/>Next.js · React · TypeScript<br/>Configurar · Practicar · Revisar"]
+    B["BACKEND CLOSER<br/>Monolito modular<br/>Casos de uso y reglas del negocio"]
+    subgraph S["SUPABASE"]
+        AUTH["AUTH<br/>Identidad · Google OAuth"]
+        DB[("POSTGRESQL<br/>Perfiles · Escenarios · Sesiones<br/>Transcripciones · Evaluaciones")]
+        ST["STORAGE<br/>Archivos opcionales"]
+    end
+    subgraph IA["INTELIGENCIA ARTIFICIAL"]
+        V["GEMINI · VOZ<br/>Conversación en tiempo real"]
+        E["GEMINI · ANÁLISIS<br/>Escenarios · Evaluación · Coaching"]
+    end
+    X["OTRAS INTEGRACIONES<br/>Pagos · Notificaciones"]
+    U --> W
+    W -->|HTTPS / REST| B
+    W <-->|HTTPS · autenticación| AUTH
+    W <-->|WSS · audio y eventos| V
+    B -->|Preparar acceso autorizado| V
+    B -->|Persistencia| DB
+    B -->|Identidad| AUTH
+    B -.->|Archivos si se requieren| ST
+    B -->|API mediante adaptadores| E
+    B -->|HTTPS / API| X
+
+    classDef actor fill:#F1F5F9,stroke:#64748B,color:#0F172A
+    classDef interfaz fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A,stroke-width:2px
+    classDef negocio fill:#CCFBF1,stroke:#0D9488,color:#134E4A,stroke-width:2px
+    classDef datos fill:#FEF3C7,stroke:#D97706,color:#78350F
+    classDef externo fill:#FFE4E6,stroke:#E11D48,color:#881337
+    class U actor
+    class W interfaz
+    class B negocio
+    class AUTH,DB,ST datos
+    class V,E,X externo
+    style S fill:#FFFBEB,stroke:#F59E0B
+    style IA fill:#FFF1F2,stroke:#FDA4AF

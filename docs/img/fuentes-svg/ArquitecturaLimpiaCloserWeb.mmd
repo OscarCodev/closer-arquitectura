@@ -1,0 +1,38 @@
+flowchart TB
+    subgraph B["BACKEND CLOSER · ORGANIZACIÓN INTERNA"]
+        subgraph EXT["CAPAS EXTERNAS · DETALLES TECNOLÓGICOS"]
+            P["PRESENTACIÓN<br/>Controladores REST · DTOs<br/>Validación y contexto del usuario"]
+            I["INFRAESTRUCTURA<br/>Repositorios Supabase · Adaptadores Gemini<br/>Identidad · Pagos · Notificaciones"]
+        end
+        subgraph APP["APLICACIÓN · ORQUESTACIÓN"]
+            C["CASOS DE USO<br/>IniciarSimulacion · FinalizarSesion<br/>EvaluarSesion · ConsultarProgreso"]
+            PU["PUERTOS / CONTRATOS<br/>RepositorioSesiones · RepositorioEvaluaciones<br/>EvaluadorConversacion · ProveedorVoz"]
+        end
+        subgraph DOM["DOMINIO · NÚCLEO DEL NEGOCIO"]
+            E["ENTIDADES Y VALORES<br/>SesionPractica · Escenario · Prospecto<br/>Evaluacion · CuotaDeUso"]
+            R["REGLAS<br/>Transiciones válidas · Cuota disponible<br/>Evaluar solo sesiones finalizadas"]
+        end
+        P -->|Invoca| C
+        C -->|Utiliza| PU
+        C -->|Opera entidades| E
+        E --> R
+        I -.->|Implementa contratos| PU
+        I -->|Mapea datos| E
+    end
+    T["TECNOLOGÍAS EXTERNAS<br/>Supabase · Google GenAI SDK<br/>APIs de pagos y notificaciones"]
+    I -->|Utiliza| T
+
+    classDef presentacion fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A,stroke-width:2px
+    classDef aplicacion fill:#CCFBF1,stroke:#0D9488,color:#134E4A,stroke-width:2px
+    classDef dominio fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:2px
+    classDef infra fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:2px
+    classDef externo fill:#F1F5F9,stroke:#64748B,color:#0F172A
+    class P presentacion
+    class C,PU aplicacion
+    class E,R dominio
+    class I infra
+    class T externo
+    style B fill:#F8FAFC,stroke:#334155,stroke-width:2px
+    style EXT fill:#F5F3FF,stroke:#C4B5FD
+    style APP fill:#F0FDFA,stroke:#5EEAD4
+    style DOM fill:#FFFBEB,stroke:#FBBF24

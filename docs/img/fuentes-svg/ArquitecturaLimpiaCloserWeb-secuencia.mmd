@@ -1,0 +1,42 @@
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant W as Aplicación web
+    participant P as API REST
+    participant A as Casos de uso
+    participant D as Dominio
+    participant R as Repositorios / Supabase
+    participant G as Evaluador / Gemini
+
+    U->>W: Finalizar práctica
+    W->>W: Detener micrófono y cerrar canal de voz
+    W->>P: Solicitar finalización
+    P->>A: FinalizarSesion(usuario, sesión)
+    A->>R: Recuperar sesión y conversación registrada
+    R-->>A: Sesión y transcripción
+    A->>A: Verificar propiedad de la sesión
+    A->>D: Validar transición de estado
+    D-->>A: Sesión finalizada
+    A->>R: Guardar cierre y evaluación pendiente
+    A-->>P: Finalización registrada
+    P-->>W: Sesión finalizada
+    W->>P: Solicitar evaluación
+    P->>A: EvaluarSesion(usuario, sesión)
+    A->>R: Recuperar sesión y evaluación existente
+    A->>A: Verificar propiedad y evitar duplicados
+    A->>D: Validar sesión finalizada
+    A->>G: Evaluar conversación mediante contrato
+    alt Evaluación disponible
+        G-->>A: Resultado normalizado
+        A->>D: Validar estructura y valores
+        A->>R: Guardar métricas y recomendaciones
+        A-->>P: Evaluación disponible
+        P-->>W: Resultados
+        W-->>U: Radar, métricas y feedback
+    else Proveedor no disponible
+        G-->>A: Error de integración
+        A->>R: Registrar fallo recuperable
+        A-->>P: Sesión conservada, evaluación no disponible
+        P-->>W: Estado y opción de reintento
+        W-->>U: Mostrar estado de evaluación
+    end

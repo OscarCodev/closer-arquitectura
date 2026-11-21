@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1110" viewBox="0 0 1560 1110">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="1110" fill="#FFFFFF"/>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">C4 · Nivel 3 · Módulos de la API (implementados)</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Implementación · Closer (Sprints 2 y 3)</text>
+<path d="M780.0 275 L780.0 325.0 L300.0 325.0 L300.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="497.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="540.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M780.0 275 L780.0 325.0 L780.0 325.0 L780.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="737.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="780.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M780.0 275 L780.0 325.0 L1260.0 325.0 L1260.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="977.0" y="290.0" width="86" height="30" fill="white"/>
+<text x="1020.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Invoca</text>
+<path d="M300.0 505 L300.0 555.0 L780.0 555.0 L780.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="513.5" y="520.0" width="53" height="30" fill="white"/>
+<text x="540.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Usa</text>
+<path d="M780.0 505 L780.0 555.0 L780.0 555.0 L780.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="753.5" y="520.0" width="53" height="30" fill="white"/>
+<text x="780.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Usa</text>
+<path d="M1260.0 505 L1260.0 555.0 L780.0 555.0 L780.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="993.5" y="520.0" width="53" height="30" fill="white"/>
+<text x="1020.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Usa</text>
+<path d="M300.0 835 L300.0 785.0 L780.0 785.0 L780.0 735" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="475.0" y="750.0" width="130" height="30" fill="white"/>
+<text x="540.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<path d="M780.0 835 L780.0 785.0 L780.0 785.0 L780.0 735" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="715.0" y="750.0" width="130" height="30" fill="white"/>
+<text x="780.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<path d="M1260.0 835 L1260.0 785.0 L780.0 785.0 L780.0 735" fill="none" stroke="#475569" stroke-width="2.5" stroke-dasharray="9 6" marker-end="url(#arrow)"/>
+<rect x="955.0" y="750.0" width="130" height="30" fill="white"/>
+<text x="1020.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Implementa</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#DBEAFE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">API REST · /api/v1</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">AuthGuard · RateLimitGuard</text>
+<text x="780.0" y="238" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">ValidationPipe · Swagger</text>
+<rect x="95.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">identity</text>
+<text x="300.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">/me · onboarding</text>
+<text x="300.0" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Verificación de JWT</text>
+<rect x="575.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">profiles</text>
+<text x="780.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Biblioteca de prospectos</text>
+<text x="780.0" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">CRUD por entidad</text>
+<rect x="1055.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">practice</text>
+<text x="1260.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Sesiones · simulaciones</text>
+<text x="1260.0" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Evaluación · coach · asistente</text>
+<rect x="575.0" y="605" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Puertos de aplicación</text>
+<text x="780.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">CachePort · RateLimiterPort · repositorios</text>
+<text x="780.0" y="698" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">ConversationAiPort · LiveVoicePort</text>
+<rect x="95.0" y="835" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Adaptadores Prisma</text>
+<text x="300.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Repositorios PostgreSQL</text>
+<rect x="575.0" y="835" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Adaptadores Redis</text>
+<text x="780.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Caché · rate limit</text>
+<rect x="1055.0" y="835" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Adaptadores de IA</text>
+<text x="1260.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Gemini · simulado (pruebas)</text>
+<text x="55" y="1080" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">También: support (contacto + webhook) y health (live · ready · metrics). ESLint impide que dominio y aplicación importen Prisma, Redis o Gemini.</text>
+</svg>

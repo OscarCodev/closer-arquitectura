@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="880" viewBox="0 0 1560 880">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="880" fill="#FFFFFF"/>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">Closer · Arquitectura inicial</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Propuesta de diseño · Closer</text>
+<path d="M780.0 275 L780.0 325.0 L540.0 325.0 L540.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="584.0" y="290.0" width="152" height="30" fill="white"/>
+<text x="660.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">HTTPS / REST</text>
+<path d="M780.0 275 L780.0 325.0 L1020.0 325.0 L1020.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="873.5" y="290.0" width="53" height="30" fill="white"/>
+<text x="900.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">WSS</text>
+<path d="M540.0 505 L540.0 555.0 L300.0 555.0 L300.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="278.0" y="520.0" width="284" height="30" fill="white"/>
+<text x="420.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Persistencia / identidad</text>
+<path d="M540.0 505 L540.0 555.0 L780.0 555.0 L780.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="551.0" y="520.0" width="218" height="30" fill="white"/>
+<text x="660.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Análisis posterior</text>
+<path d="M540.0 505 L540.0 555.0 L1260.0 555.0 L1260.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="818.5" y="520.0" width="163" height="30" fill="white"/>
+<text x="900.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">APIs externas</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#DBEAFE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Aplicación web</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Configurar · practicar · revisar</text>
+<rect x="335.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Backend modular</text>
+<text x="540.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Reglas · cuotas · casos de uso</text>
+<rect x="815.0" y="375" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Gemini · voz</text>
+<text x="1020.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Prospecto en tiempo real</text>
+<rect x="95.0" y="605" width="410" height="130" rx="14" fill="#FEF3C7" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Supabase</text>
+<text x="300.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">PostgreSQL · Auth</text>
+<text x="300.0" y="698" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Storage opcional</text>
+<rect x="575.0" y="605" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Gemini · análisis</text>
+<text x="780.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Escenarios · evaluación</text>
+<rect x="1055.0" y="605" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Otras integraciones</text>
+<text x="1260.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Pagos · notificaciones</text>
+<text x="55" y="850" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">Web también autentica con Auth. Backend prepara acceso autorizado a voz. Las credenciales permanentes quedan en servidor.</text>
+</svg>

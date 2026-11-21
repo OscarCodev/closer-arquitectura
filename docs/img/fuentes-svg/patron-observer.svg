@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="880" viewBox="0 0 1560 880">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="880" fill="#FFFFFF"/>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">Patrón Observer · Avisos secundarios</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Propuesta de diseño · Closer</text>
+<path d="M780.0 275 L780.0 325.0 L780.0 325.0 L780.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="649.0" y="290.0" width="262" height="30" fill="white"/>
+<text x="780.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Publica tras persistir</text>
+<path d="M780.0 505 L780.0 555.0 L540.0 555.0 L540.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="606.0" y="520.0" width="108" height="30" fill="white"/>
+<text x="660.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Notifica</text>
+<path d="M780.0 505 L780.0 555.0 L1020.0 555.0 L1020.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="846.0" y="520.0" width="108" height="30" fill="white"/>
+<text x="900.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Notifica</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluarSesion</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Resultado guardado y validado</text>
+<rect x="575.0" y="375" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">EvaluacionCompletada</text>
+<text x="780.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Evento en memoria</text>
+<rect x="335.0" y="605" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">ObservadorNotificacion</text>
+<text x="540.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Solicita aviso</text>
+<rect x="815.0" y="605" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">ObservadorProgreso</text>
+<text x="1020.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Actualiza vista secundaria</text>
+<text x="55" y="850" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">Futuro: eventos en memoria no garantizan entrega. La persistencia crítica no depende de observadores.</text>
+</svg>

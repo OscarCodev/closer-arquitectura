@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1340" viewBox="0 0 1560 1340">
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<rect width="1560" height="1340" fill="#FFFFFF"/>
+<text x="55" y="55" text-anchor="start" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#0F172A">C4 · Nivel 2 · Contenedores implementados</text>
+<text x="55" y="92" text-anchor="start" font-family="Arial, sans-serif" font-size="21" font-weight="normal" fill="#0F172A">Implementación · Closer (Sprints 2 y 3)</text>
+<path d="M780.0 275 L780.0 325.0 L540.0 325.0 L540.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="584.0" y="290.0" width="152" height="30" fill="white"/>
+<text x="660.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">HTTPS · /api</text>
+<path d="M780.0 275 L780.0 325.0 L1020.0 325.0 L1020.0 375" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="829.5" y="290.0" width="141" height="30" fill="white"/>
+<text x="900.0" y="313.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">WSS · audio</text>
+<path d="M540.0 505 L540.0 555.0 L540.0 555.0 L540.0 605" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="447.5" y="520.0" width="185" height="30" fill="white"/>
+<text x="540.0" y="543.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">HTTP · balanceo</text>
+<path d="M745.0 670.0 L815.0 670.0" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="742.5" y="633.0" width="75" height="30" fill="white"/>
+<text x="780.0" y="656.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Caché</text>
+<path d="M540.0 735 L540.0 785.0 L300.0 785.0 L300.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="393.5" y="750.0" width="53" height="30" fill="white"/>
+<text x="420.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">SQL</text>
+<path d="M540.0 735 L540.0 785.0 L780.0 785.0 L780.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="545.5" y="750.0" width="229" height="30" fill="white"/>
+<text x="660.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Verifica JWT (JWKS)</text>
+<path d="M540.0 735 L540.0 785.0 L1260.0 785.0 L1260.0 835" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="840.5" y="750.0" width="119" height="30" fill="white"/>
+<text x="900.0" y="773.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Adaptador</text>
+<path d="M300.0 965 L300.0 1015.0 L780.0 1015.0 L780.0 1065" fill="none" stroke="#475569" stroke-width="2.5"  marker-end="url(#arrow)"/>
+<rect x="436.5" y="980.0" width="207" height="30" fill="white"/>
+<text x="540.0" y="1003.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" font-weight="normal" fill="#0F172A">Conexiones reales</text>
+<rect x="575.0" y="145" width="410" height="130" rx="14" fill="#DBEAFE" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Aplicación web</text>
+<text x="780.0" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Next.js 16 · React 19 · TypeScript</text>
+<text x="780.0" y="238" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Vercel o 2 réplicas en VPS</text>
+<rect x="335.0" y="375" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Balanceador nginx</text>
+<text x="540.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">least_conn · failover</text>
+<text x="540.0" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Límite por IP · gzip</text>
+<rect x="815.0" y="375" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Gemini Live · voz</text>
+<text x="1020.0" y="443" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">WSS directo desde el navegador</text>
+<text x="1020.0" y="468" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Token efímero bloqueado</text>
+<rect x="335.0" y="605" width="410" height="130" rx="14" fill="#CCFBF1" stroke="#64748B" stroke-width="2"/>
+<text x="540.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">API Closer · NestJS 11</text>
+<text x="540.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">3 réplicas sin estado</text>
+<text x="540.0" y="698" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Monolito modular · Clean Arch.</text>
+<rect x="815.0" y="605" width="410" height="130" rx="14" fill="#FEF3C7" stroke="#64748B" stroke-width="2"/>
+<text x="1020.0" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Redis 7</text>
+<text x="1020.0" y="673" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Caché · rate limit compartido</text>
+<rect x="95.0" y="835" width="410" height="130" rx="14" fill="#EDE9FE" stroke="#64748B" stroke-width="2"/>
+<text x="300.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">PgBouncer / Supavisor</text>
+<text x="300.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Pool de conexiones</text>
+<text x="300.0" y="928" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Modo transacción</text>
+<rect x="575.0" y="835" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Supabase Auth</text>
+<text x="780.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">JWT · Google OAuth</text>
+<text x="780.0" y="928" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Código por correo</text>
+<rect x="1055.0" y="835" width="410" height="130" rx="14" fill="#FFE4E6" stroke="#64748B" stroke-width="2"/>
+<text x="1260.0" y="870" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">Gemini · texto</text>
+<text x="1260.0" y="903" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Evaluación · coach</text>
+<text x="1260.0" y="928" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Extracción · escenarios</text>
+<rect x="575.0" y="1065" width="410" height="130" rx="14" fill="#FEF3C7" stroke="#64748B" stroke-width="2"/>
+<text x="780.0" y="1100" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="bold" fill="#0F172A">PostgreSQL · Supabase</text>
+<text x="780.0" y="1133" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Migraciones Prisma</text>
+<text x="780.0" y="1158" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="normal" fill="#0F172A">Índices por usuario</text>
+<text x="55" y="1310" text-anchor="start" font-family="Arial, sans-serif" font-size="18" font-weight="normal" fill="#0F172A">La web también inicia sesión con Supabase Auth. Cloudflare (TLS, CDN, DNS) queda delante de la web y de nginx.</text>
+</svg>
