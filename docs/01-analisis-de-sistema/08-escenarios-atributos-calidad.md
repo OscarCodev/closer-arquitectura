@@ -39,7 +39,7 @@ Las metas se propusieron en el Sprint 1 y se verificaron durante la implementaci
 | Respuesta | Iniciar sesiones dentro de cuotas y mantener operaciones de gestión utilizables. |
 | Medida | Gestión (panel, historial, biblioteca): p95 ≤ 1 s y errores técnicos < 1 %. |
 | Verificación | k6 con rampa 5 % → 25 % → 50 % → 100 % y pico sostenido; monitoreo de CPU, memoria y conexiones por contenedor (`infra/k6`). |
-| Estado | Cumple en servidor con 300 usuarios en la laptop de desarrollo: gestión p95 822 ms y 0.008 % de errores. Medición oficial con 2,000 usuarios en GitHub Actions: ver [pruebas de carga](../pruebas/pruebas-carga.md). |
+| Estado | **Cumple con 2,000 usuarios concurrentes** (runner Linux de GitHub Actions): gestión p95 579 ms, 0 errores en 316,758 peticiones de gestión, 608 req/s. Ver [pruebas de carga](../pruebas/pruebas-carga.md). |
 
 ## EQ-04. Seguridad
 

@@ -61,6 +61,37 @@ Del lado del cliente, k6 registró 35 % de errores: ~6,300 peticiones expiraron 
 
 ### 2. Runner Linux de GitHub Actions, 2,000 usuarios virtuales (medición oficial)
 
-Se ejecuta con `.github/workflows/carga.yml` (Actions → "Prueba de carga (k6)" → Run workflow). El resumen con tiempos, umbrales, CPU y memoria por contenedor queda en la página del run, y los archivos completos como artefacto `resultados-k6-2000vus`.
+Ejecutada el 21 de noviembre de 2026 con `.github/workflows/carga.yml` ([run #1](https://github.com/OscarCodev/closer-arquitectura/actions/runs/44959807408)) en un runner estándar `ubuntu-latest`, con k6 y el stack completo en la misma máquina. Archivos del resultado: [`resultados-k6-2000vus/`](resultados-k6-2000vus/resumen.md).
 
-*Pendiente de ejecución.*
+**Resultado: cumple EQ-03.** Los 5 umbrales pasaron.
+
+| Métrica | Resultado | Umbral | |
+|---|---|---|---|
+| Usuarios virtuales concurrentes (pico) | 2,000 | — | |
+| Peticiones totales | 376,696 (608 req/s) | — | |
+| Iteraciones / prácticas completas evaluadas | 74,528 / 18,614 | — | |
+| **Gestión: p95** | **579 ms** (mediana 108 ms, p90 412 ms) | p95 < 1 s | ✅ |
+| **Gestión: errores** | **0 de 316,758** | < 1 % | ✅ |
+| Práctica (iniciar, coach, evaluar): p95 | 943 ms (mediana 219 ms) | p95 < 3 s | ✅ |
+| Práctica: errores | 0.057 % (32 respuestas 429) | < 1 % | ✅ |
+| Checks funcionales | 99.97 % | > 99 % | ✅ |
+
+Los 32 errores son respuestas 429 del límite de evaluaciones por usuario (4 por minuto): la protección funcionando, no fallas del sistema.
+
+**Comportamiento de los componentes** (máximos durante la prueba):
+
+| Componente | CPU máx. | Memoria máx. | Observación |
+|---|---|---|---|
+| API (3 réplicas) | 81 %, 83 %, 85 % | 102–120 MB | Carga repartida de forma pareja |
+| PostgreSQL | 80 % | 202 MB | Crece con la carga, igual que la API |
+| PgBouncer | 28 % | 12 MB | 41 conexiones reales a PostgreSQL |
+| nginx | 23 % | 65 MB | Lejos de su límite |
+| Redis | 13 % | 67 MB | Aciertos de caché: 85.4–85.6 % en cada réplica |
+| Web (2 réplicas) | 16 %, 24 % | 41–54 MB | El tráfico de la prueba es casi todo API |
+
+**Lectura de los resultados:**
+
+- **La caché hizo su trabajo**: 85.5 % de las lecturas de onboarding, biblioteca e historial salieron de Redis (≈ 255,000 aciertos), sin tocar PostgreSQL.
+- **El pool de conexiones protegió a la base de datos**: miles de peticiones concurrentes usaron solo 41 conexiones reales a PostgreSQL.
+- **Dónde está el límite**: desde la mitad de la rampa las conexiones reales se estabilizan en 41 (el pool de 40 de PgBouncer más el monitor), es decir, el pool queda saturado en el pico. Eso explica la cola de latencia: el p99 de gestión llega a 12.6 s porque algunas peticiones esperan turno en PgBouncer, aunque el 95 % responde en menos de 0.6 s. Con la API y PostgreSQL por encima del 80 % de CPU, 2,000 usuarios sostenidos están cerca del máximo de este hardware.
+- **Próximos pasos para más capacidad** (no requeridos por EQ-03): ampliar el pool de PgBouncer junto con los recursos de PostgreSQL, agregar réplicas de la API en otro servidor, y réplicas de lectura de PostgreSQL para el historial (ADR-009).

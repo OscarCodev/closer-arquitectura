@@ -1,0 +1,6 @@
+{"instance":"5ae170943699","uptimeSeconds":671,"memoryMb":134,"cache":{"hits":85476,"misses":14421,"hitRatio":0.856}}
+{"instance":"81cf091b4ec7","uptimeSeconds":671,"memoryMb":136,"cache":{"hits":84845,"misses":14397,"hitRatio":0.855}}
+{"instance":"d79fa5943aea","uptimeSeconds":671,"memoryMb":134,"cache":{"hits":84592,"misses":14421,"hitRatio":0.854}}
+{"instance":"5ae170943699","uptimeSeconds":671,"memoryMb":134,"cache":{"hits":85476,"misses":14421,"hitRatio":0.856}}
+{"instance":"d79fa5943aea","uptimeSeconds":671,"memoryMb":134,"cache":{"hits":84592,"misses":14421,"hitRatio":0.854}}
+{"instance":"81cf091b4ec7","uptimeSeconds":671,"memoryMb":136,"cache":{"hits":84845,"misses":14397,"hitRatio":0.855}}

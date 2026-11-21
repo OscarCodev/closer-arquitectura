@@ -22,6 +22,7 @@ Para que las pruebas no tengan costo ni dependan de terceros: la IA usa el adapt
 | Unitarias (13 archivos) | 127 | Todas pasan |
 | Integración (1 archivo) | 19 | Todas pasan |
 | End to End (4 escenarios) | 4 | Todas pasan |
+| Carga con k6 (2,000 usuarios) | 5 umbrales | Todos cumplen ([detalle](pruebas-carga.md)) |
 
 Cobertura combinada (unitarias + integración) del backend:
 

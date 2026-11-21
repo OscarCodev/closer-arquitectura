@@ -66,4 +66,4 @@ Stack local `infra/docker-compose.prod.yml` (perfil `local-db`): 3 API + 2 web +
 | Límite de soporte (2/min) con envíos repartidos entre réplicas (CA-08.3) | 201, 201, 429, 429: el límite es global |
 | *Failover*: `api-2` detenida, 20 peticiones | 20 × 200, atendidas por las otras dos réplicas |
 | Pruebas E2E a través de nginx (puerto 8080) | 4 de 4 escenarios pasan (uno se repitió tras un reinicio de conexión momentáneo del puerto) |
-| Capacidad con k6 | Ver [pruebas de carga](../pruebas/pruebas-carga.md) |
+| Capacidad con k6: 2,000 usuarios concurrentes (GitHub Actions) | Cumple EQ-03: gestión p95 579 ms, 0 errores de gestión, 608 req/s; caché 85.5 %; 41 conexiones reales a PostgreSQL. Límite observado: el pool de PgBouncer se satura en el pico (p99 12.6 s). Ver [pruebas de carga](../pruebas/pruebas-carga.md) |
