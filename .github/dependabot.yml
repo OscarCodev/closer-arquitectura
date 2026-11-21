@@ -6,9 +6,15 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Las versiones mayores (p. ej. NestJS 11 → 12) cambian APIs: se actualizan a mano, no por PR automático.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         dependency-type: development
+      production-dependencies:
+        dependency-type: production
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -17,3 +23,7 @@ updates:
     directory: /apps/api
     schedule:
       interval: monthly
+    # Node se mantiene en la versión LTS elegida; el salto de versión mayor se decide a mano.
+    ignore:
+      - dependency-name: node
+        update-types: ['version-update:semver-major']
