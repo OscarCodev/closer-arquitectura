@@ -26,7 +26,8 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
 RUN npm run build -w apps/web
 
 FROM node:22-bookworm-slim AS runtime
-ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1
+# KEEP_ALIVE_TIMEOUT mayor que el de nginx (30 s) evita 502 por conexiones que el servidor cierra mientras nginx las reutiliza.
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 NEXT_TELEMETRY_DISABLED=1 KEEP_ALIVE_TIMEOUT=65000
 WORKDIR /app
 COPY --from=build /app/apps/web/.next/standalone ./
 COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static

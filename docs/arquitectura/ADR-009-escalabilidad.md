@@ -33,8 +33,8 @@ Con eso se ejecutan **3 réplicas** (`api-1`, `api-2`, `api-3`) detrás de **ngi
 
 | Técnica | Implementación |
 |---|---|
-| Pool de conexiones por réplica | `connection_limit` en `DATABASE_URL` (5 en producción, 10 en pruebas) |
-| *Pooler* delante de PostgreSQL | PgBouncer en modo transacción (local, hasta 2,000 clientes sobre un pool de 30 conexiones); en Supabase, su pooler Supavisor (puerto 6543). Prisma usa `pgbouncer=true` |
+| Pool de conexiones por réplica | `connection_limit` en `DATABASE_URL` (5 en producción hacia Supavisor, 25 en pruebas hacia PgBouncer) |
+| *Pooler* delante de PostgreSQL | PgBouncer en modo transacción (local, hasta 2,000 clientes sobre un pool de 40 conexiones); en Supabase, su pooler Supavisor (puerto 6543). Prisma usa `pgbouncer=true` |
 | Índices para las consultas frecuentes | `prospect_profiles (user_id, updated_at desc)`, `practice_sessions (user_id, updated_at desc)`, `simulations (session_id, created_at)` y `(user_id, created_at desc)`, `support_contacts (user_id, created_at desc)` |
 | Menos lecturas | Caché en Redis de onboarding, prospectos e historial (ADR-008) |
 | Consultas acotadas | Historial: 60 sesiones; biblioteca: 200 prospectos; transcripción: 400 turnos / 24,000 caracteres |
@@ -66,4 +66,4 @@ Stack local `infra/docker-compose.prod.yml` (perfil `local-db`): 3 API + 2 web +
 | Límite de soporte (2/min) con envíos repartidos entre réplicas (CA-08.3) | 201, 201, 429, 429: el límite es global |
 | *Failover*: `api-2` detenida, 20 peticiones | 20 × 200, atendidas por las otras dos réplicas |
 | Pruebas E2E a través de nginx (puerto 8080) | 4 de 4 escenarios pasan (uno se repitió tras un reinicio de conexión momentáneo del puerto) |
-| Capacidad con k6 | Ver informe de la fase 8 |
+| Capacidad con k6 | Ver [pruebas de carga](../pruebas/pruebas-carga.md) |

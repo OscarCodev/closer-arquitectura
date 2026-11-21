@@ -81,13 +81,17 @@ export class PrismaPracticeRepository implements PracticeRepositoryPort {
   }
 
   async completeSimulation(simulationId: string, durationSeconds: number, result: EvaluationResult) {
-    await this.prisma.$transaction(async (tx) => {
-      const simulation = await tx.simulation.update({
+    // Transacción en lote (no interactiva): las tres escrituras se envían juntas, sin idas y vueltas que
+    // mantengan una conexión ocupada. La versión interactiva vencía (5 s) bajo carga (hallazgo de k6).
+    const ofThisSimulation = { simulations: { some: { id: simulationId } } }
+    const now = new Date()
+    await this.prisma.$transaction([
+      this.prisma.simulation.update({
         where: { id: simulationId },
         data: {
           status: 'COMPLETED',
-          statusChangedAt: new Date(),
-          evaluatedAt: new Date(),
+          statusChangedAt: now,
+          evaluatedAt: now,
           durationSeconds,
           score: result.metrics.score,
           metrics: json(result.metrics),
@@ -95,14 +99,15 @@ export class PrismaPracticeRepository implements PracticeRepositoryPort {
           analysis: json(result.analysis),
           transcript: result.transcript,
         },
-      })
-      // La sesión sube al inicio del historial; si su nombre era automático, toma el título sugerido.
-      const session = await tx.practiceSession.findUniqueOrThrow({ where: { id: simulation.sessionId } })
-      await tx.practiceSession.update({
-        where: { id: session.id },
-        data: session.nameIsAuto ? { name: result.suggestedTitle.slice(0, 120), nameIsAuto: false } : { updatedAt: new Date() },
-      })
-    })
+      }),
+      // Si el nombre de la sesión era automático, toma el título sugerido…
+      this.prisma.practiceSession.updateMany({
+        where: { ...ofThisSimulation, nameIsAuto: true },
+        data: { name: result.suggestedTitle.slice(0, 120), nameIsAuto: false },
+      }),
+      // …y en cualquier caso la sesión sube al inicio del historial.
+      this.prisma.practiceSession.updateMany({ where: ofThisSimulation, data: { updatedAt: now } }),
+    ])
   }
 
   async failSimulation(simulationId: string, durationSeconds: number, reason: string) {

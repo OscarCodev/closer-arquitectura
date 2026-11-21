@@ -1,0 +1,76 @@
+# Prueba de carga con k6 (manual): levanta el stack escalable completo en el runner de GitHub
+# (3 API + 2 web + nginx + Redis + PostgreSQL + PgBouncer) y ejecuta la rampa hasta MAX_VUS usuarios.
+# Se ejecuta desde la pestaña Actions → "Prueba de carga (k6)" → Run workflow.
+name: Prueba de carga (k6)
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_vus:
+        description: Usuarios virtuales concurrentes en el pico
+        default: '2000'
+        required: true
+
+jobs:
+  carga:
+    name: k6 · rampa hasta ${{ inputs.max_vus }} usuarios
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      COMPOSE: docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod.local --profile local-db
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Recursos del runner
+        run: |
+          echo "CPU: $(nproc) · RAM: $(free -h | awk '/Mem/{print $2}')" | tee -a "$GITHUB_STEP_SUMMARY"
+          ulimit -n
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci -w apps/api
+
+      - name: Construir y levantar el stack
+        run: |
+          $COMPOSE build
+          $COMPOSE up -d postgres redis
+          for i in $(seq 1 30); do docker exec closer-prod-postgres-1 pg_isready -U closer && break; sleep 2; done
+          DATABASE_URL=postgresql://closer:closer@127.0.0.1:5433/closer DIRECT_DATABASE_URL=postgresql://closer:closer@127.0.0.1:5433/closer \
+            npm run prisma:deploy -w apps/api
+          $COMPOSE up -d
+          for i in $(seq 1 60); do curl -fsS http://127.0.0.1:8080/api/v1/health/ready && break; sleep 3; done
+          $COMPOSE ps
+
+      - uses: grafana/setup-k6-action@v1
+
+      - name: Prueba de humo
+        run: k6 run --quiet infra/k6/humo.js
+
+      - name: Prueba de carga
+        run: |
+          mkdir -p infra/k6/results
+          INTERVAL=10 bash infra/k6/monitor.sh infra/k6/results/monitor.csv &
+          MONITOR=$!
+          set +e
+          k6 run --quiet -e MAX_VUS=${{ inputs.max_vus }} infra/k6/carga.js | tee infra/k6/results/salida.txt
+          STATUS=${PIPESTATUS[0]}
+          kill $MONITOR
+          for i in $(seq 1 6); do curl -s http://127.0.0.1:8080/api/v1/health/metrics; echo; done > infra/k6/results/metricas-replicas.txt
+          exit $STATUS
+
+      - name: Resumen
+        if: always()
+        run: |
+          cat infra/k6/results/ultimo-resumen.md >> "$GITHUB_STEP_SUMMARY" || true
+          echo -e "\n## Uso máximo de recursos por contenedor\n\n| Contenedor | CPU máx (%) | Memoria máx (MB) |\n|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          awk -F, 'NR>1 {if($3>c[$2])c[$2]=$3; if($4>m[$2])m[$2]=$4} END {for(k in c) printf "| %s | %s | %s |\n", k, c[k], m[k]}' infra/k6/results/monitor.csv | sort >> "$GITHUB_STEP_SUMMARY" || true
+          echo -e "\nConexiones máximas a PostgreSQL: $(awk -F, 'NR>1 && $2>m {m=$2} END {print m}' infra/k6/results/monitor-postgres.csv)" >> "$GITHUB_STEP_SUMMARY" || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resultados-k6-${{ inputs.max_vus }}vus
+          path: infra/k6/results
+          retention-days: 30
