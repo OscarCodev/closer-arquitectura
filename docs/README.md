@@ -51,6 +51,7 @@ La documentación sigue el orden del proyecto: análisis y propuesta (Sprint 1),
 
 ## 7. Despliegue
 
+- [Guía de despliegue (Supabase, Render, Vercel, Upstash, Cloudflare)](despliegue/guia-despliegue.md)
 - [CI/CD con GitHub Actions](despliegue/ci-cd.md)
 
 ## Diagramas

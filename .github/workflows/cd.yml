@@ -91,9 +91,9 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Render (deploy hook con la imagen recién publicada)
+      - name: Render (deploy hook del commit que pasó el CI; ver render.yaml)
         if: env.RENDER_DEPLOY_HOOK_URL != ''
-        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&imgURL=$(printf %s "$IMAGE:latest" | jq -sRr @uri)"
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}" > /dev/null && echo "Despliegue solicitado a Render"
 
       - name: Railway
         if: env.RAILWAY_TOKEN != ''
