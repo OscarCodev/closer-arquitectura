@@ -66,7 +66,7 @@ jobs:
           node -e "const s=require('./apps/api/coverage/coverage-summary.json').total;console.log('| Métrica | % |\n|---|---|\n'+['lines','statements','functions','branches'].map(k=>'| '+k+' | '+s[k].pct+' |').join('\n'))" >> "$GITHUB_STEP_SUMMARY"
       - name: Build
         run: npm run build -w apps/api
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: cobertura-api
@@ -133,7 +133,7 @@ jobs:
         run: npx --workspace apps/web playwright install --with-deps chromium
       - name: Pruebas E2E (levanta API y web en modo producción)
         run: npm run test:e2e -w apps/web
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: reporte-playwright

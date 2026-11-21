@@ -68,7 +68,7 @@ jobs:
           awk -F, 'NR>1 {if($3>c[$2])c[$2]=$3; if($4>m[$2])m[$2]=$4} END {for(k in c) printf "| %s | %s | %s |\n", k, c[k], m[k]}' infra/k6/results/monitor.csv | sort >> "$GITHUB_STEP_SUMMARY" || true
           echo -e "\nConexiones máximas a PostgreSQL: $(awk -F, 'NR>1 && $2>m {m=$2} END {print m}' infra/k6/results/monitor-postgres.csv)" >> "$GITHUB_STEP_SUMMARY" || true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: resultados-k6-${{ inputs.max_vus }}vus
