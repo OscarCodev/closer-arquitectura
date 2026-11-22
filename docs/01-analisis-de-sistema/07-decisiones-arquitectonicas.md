@@ -1,6 +1,6 @@
 # Decisiones arquitectónicas de Closer
 
-Estado: **implementadas** (Sprints 2 y 3). Las decisiones del Sprint 1 se mantienen; la columna "Implementación" indica cómo se materializó cada una y las ADR-008 a ADR-010 se agregaron durante la construcción.
+Estado: **implementadas** (Sprints 2 y 3). Las decisiones del Sprint 1 se mantienen; la columna "Implementación" indica cómo se materializó cada una y las ADR-008 a ADR-011 se agregaron durante la construcción.
 
 | ID | Decisión | Drivers | Justificación | Implementación |
 |---|---|---|---|---|
@@ -14,6 +14,7 @@ Estado: **implementadas** (Sprints 2 y 3). Las decisiones del Sprint 1 se mantie
 | ADR-008 | [Caché y rate limiting con Redis](../arquitectura/ADR-008-cache-redis.md) | DA02 | Lecturas frecuentes y límites que funcionen con varias réplicas. | Redis compartido: caché *cache-aside* con invalidación por escritura y límites por usuario. |
 | ADR-009 | [Escalabilidad horizontal](../arquitectura/ADR-009-escalabilidad.md) | DA02 | Atender la concurrencia del Sprint 2 (k6 hasta 2,000 usuarios). | nginx con 3 réplicas de la API y 2 de la web; PgBouncer o Supavisor como pool de conexiones. |
 | ADR-010 | Evaluación calculada solo en el servidor | DA03, DA07 | En el MVP el cliente enviaba el puntaje y podía falsificarse. | El navegador envía la transcripción; el dominio calcula el puntaje y lo guarda. Sin IA disponible no se inventa feedback: el intento queda `FAILED` y se reintenta. |
+| ADR-011 | Bloquear la Data API de Supabase con RLS | DA03 | Supabase publica las tablas en su API REST, usable con la clave pública del navegador; sin RLS cualquiera podía leerlas o modificarlas sin pasar por el backend. | Migración que activa RLS sin políticas en todas las tablas: los roles `anon` y `authenticated` no ven ni escriben nada. El backend, dueño de las tablas, no queda restringido y sigue filtrando cada consulta por el usuario del JWT. |
 
 ## Cambios respecto a la propuesta del Sprint 1
 

@@ -96,6 +96,8 @@ En https://github.com/OscarCodev/closer-arquitectura → **Settings**:
    - pide a Render que despliegue,
    - y prueba `GET /api/v1/health/ready` hasta que responda.
 
+En Supabase → *Table Editor* verás las tablas **sin** la etiqueta *UNRESTRICTED*: la migración activa Row Level Security para que la API pública de Supabase no pueda leerlas (ADR-011). Todo el acceso pasa por el backend.
+
 Comprueba en el navegador: `https://closer-api.onrender.com/api/v1/health/ready` debe mostrar `database` y `redis` en `up`. Swagger: `https://closer-api.onrender.com/api/docs`.
 
 ## 6. Vercel (web)
