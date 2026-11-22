@@ -125,7 +125,33 @@ En Supabase → **Authentication**:
    - *Site URL*: `https://<proyecto>.vercel.app`
    - *Redirect URLs*: agrega `https://<proyecto>.vercel.app/auth/callback` y `http://localhost:3000/auth/callback`.
 2. **Enlace por correo**: el login usa el **enlace mágico** de Supabase con las plantillas por defecto (no requiere SMTP propio). El enlace vuelve a `/auth/callback`, donde la web canjea el código por la sesión (flujo PKCE), así que debe abrirse **en el mismo navegador** en el que se pidió. La *Redirect URL* del punto 1 es obligatoria.
-3. **Límite de correos**: el envío incluido en el plan gratuito permite pocos correos por hora (pensado para pruebas). La pantalla avisa cuando se alcanza el límite y permite reenviar el enlace tras 60 s. Antes de presentar, entra una vez para no gastar envíos en vivo: la sesión queda guardada en el navegador.
+3. **Correo con Resend (SMTP)**: el envío incluido en Supabase solo permite unos 2 correos por hora y a veces no llega. Con Resend (gratis, 3000 correos/mes):
+   1. Crea una cuenta en https://resend.com con tu correo. Sin dominio propio, Resend **solo envía a ese mismo correo** (sirve para probar). Para enviar a cualquier persona, verifica tu dominio en *Resend → Domains* (paso 8) y usa un remitente como `no-reply@<dominio>`.
+   2. *Resend → API Keys → Create API Key* (permiso *Sending access*). Cópiala en tu archivo privado; es **SECRETA**.
+   3. Supabase → *Authentication → Emails → SMTP Settings* → **Enable custom SMTP**:
+
+      | Campo | Valor |
+      |---|---|
+      | Sender email | `onboarding@resend.dev` (o `no-reply@<dominio>` con dominio verificado) |
+      | Sender name | `Closer` |
+      | Host | `smtp.resend.com` |
+      | Port | `465` |
+      | Username | `resend` |
+      | Password | la API key de Resend |
+
+   4. *Authentication → Rate Limits* → sube *Rate limit for sending emails* (p. ej. 30 por hora).
+   5. *Authentication → Emails → Templates → Magic Link* (con SMTP propio ya se puede editar):
+      - Subject: `Tu enlace para entrar a Closer`
+      - Body:
+        ```html
+        <h2>Entra a Closer</h2>
+        <p>Haz clic en el botón para iniciar sesión. El enlace sirve una sola vez y vence en 1 hora.</p>
+        <p><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:10px 18px;background:#2563eb;color:#fff;border-radius:6px;text-decoration:none">Iniciar sesión</a></p>
+        <p>Ábrelo en el mismo navegador donde lo pediste. Si no fuiste tú, ignora este correo.</p>
+        ```
+      Repite en **Confirm signup** con el asunto `Confirma tu cuenta de Closer` (los usuarios nuevos reciben esta plantilla).
+
+   Antes de presentar, entra una vez: la sesión queda guardada en el navegador y no gasta correos en vivo.
 
 El acceso es **solo por enlace de correo** (sin Google ni otros proveedores OAuth).
 
@@ -170,6 +196,7 @@ Con el proxy de Cloudflare activo, los archivos estáticos (`/_next/static/*`, c
 | 401 en todas las rutas tras iniciar sesión | `AUTH_JWT_SECRET` o `SUPABASE_URL` incorrectos | Revisa ambos en Render |
 | El enlace lleva a "No pudimos iniciar sesión" | Se abrió en otro navegador o app de correo, ya se usó o expiró | Pedir otro y abrirlo en el mismo navegador |
 | El enlace lleva a la página de inicio sin sesión | Falta la *Redirect URL* `/auth/callback` en Supabase | Paso 7.1 |
-| "Se enviaron demasiados correos" | Límite de correos del plan gratuito | Esperar unos minutos (el límite es por hora) |
+| "Se enviaron demasiados correos" | Límite de correos (sin SMTP propio: ~2 por hora) | Configurar Resend (paso 7.3) o esperar |
+| Resend no entrega a otros correos | Sin dominio verificado solo envía al correo de la cuenta | Verificar el dominio en Resend (paso 8) |
 | La evaluación falla y los logs dicen `models/... is no longer available` (404) | Google retiró ese modelo para cuentas nuevas | Cambia `GEMINI_TEXT_MODEL` en Render al modelo que indica el mensaje (hoy `gemini-3.5-flash-lite`) |
 | La voz no conecta | `GEMINI_API_KEY` inválida o modelo no disponible | Revisa la clave; el error aparece en los logs de Render |
