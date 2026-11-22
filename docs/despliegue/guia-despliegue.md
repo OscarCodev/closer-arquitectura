@@ -171,4 +171,5 @@ Con el proxy de Cloudflare activo, los archivos estáticos (`/_next/static/*`, c
 | El enlace lleva a "No pudimos iniciar sesión" | Se abrió en otro navegador o app de correo, ya se usó o expiró | Pedir otro y abrirlo en el mismo navegador |
 | El enlace lleva a la página de inicio sin sesión | Falta la *Redirect URL* `/auth/callback` en Supabase | Paso 7.1 |
 | "Se enviaron demasiados correos" | Límite de correos del plan gratuito | Esperar unos minutos (el límite es por hora) |
+| La evaluación falla y los logs dicen `models/... is no longer available` (404) | Google retiró ese modelo para cuentas nuevas | Cambia `GEMINI_TEXT_MODEL` en Render al modelo que indica el mensaje (hoy `gemini-3.5-flash-lite`) |
 | La voz no conecta | `GEMINI_API_KEY` inválida o modelo no disponible | Revisa la clave; el error aparece en los logs de Render |

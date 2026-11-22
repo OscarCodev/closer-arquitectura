@@ -40,7 +40,7 @@ export class Env {
   GEMINI_API_KEY?: string
 
   @IsString()
-  GEMINI_TEXT_MODEL = 'gemini-2.5-flash-lite'
+  GEMINI_TEXT_MODEL = 'gemini-3.5-flash-lite'
 
   @IsString()
   GEMINI_LIVE_MODEL = 'gemini-2.5-flash-native-audio-latest'
