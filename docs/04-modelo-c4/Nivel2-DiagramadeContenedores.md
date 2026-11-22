@@ -10,7 +10,7 @@ Un contenedor C4 es una aplicación o almacén ejecutable; no implica Docker. La
 | Aplicación web | Next.js, React y TypeScript | Interfaz, micrófono, audio y consulta de resultados. |
 | Backend Closer | Monolito modular; framework por definir | Casos de uso, autorización, cuotas e integraciones. |
 | Almacén de datos | PostgreSQL administrado por Supabase | Perfiles, escenarios, sesiones, transcripciones y evaluaciones. |
-| Identidad administrada | Supabase Auth y Google OAuth | Autenticación; servicio externo al código del backend. |
+| Identidad administrada | Supabase Auth (enlace mágico por correo) | Autenticación; servicio externo al código del backend. |
 | IA de voz y análisis | Gemini mediante integración Google GenAI | Capacidades externas; no son microservicios propios. |
 
 | Origen → destino | Comunicación y propósito |
@@ -41,7 +41,7 @@ La propuesta anterior se conserva como diseño del Sprint 1. Así quedaron los c
 | Redis | Redis 7 | Caché y rate limit compartidos | 1 (Upstash en la opción administrada) |
 | Pool de conexiones | PgBouncer (local) o Supavisor (Supabase) | Multiplexar conexiones hacia PostgreSQL | — |
 | PostgreSQL | Supabase | Usuarios, onboarding, prospectos, sesiones, simulaciones, soporte | Administrado |
-| Supabase Auth | Servicio externo | Google OAuth y código por correo; emite el JWT | Administrado |
+| Supabase Auth | Servicio externo | Enlace mágico por correo (PKCE); emite el JWT | Administrado |
 | Gemini | Servicio externo | Voz en vivo (WSS) y texto: evaluación, coach, extracción | Cuotas del proveedor |
 
 | Origen → destino | Comunicación |

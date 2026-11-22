@@ -53,7 +53,7 @@ export default function AuthCallbackPage() {
         </h1>
         <p className="typo-body mt-3 text-[var(--brand-gray-500)]">
           {status === 'error'
-            ? 'La respuesta de Google no pudo validarse. Intenta de nuevo desde el botón de Google.'
+            ? 'El enlace no pudo validarse. Vuelve a intentarlo.'
             : 'Estamos validando tu cuenta y preparando tu espacio.'}
         </p>
       </div>

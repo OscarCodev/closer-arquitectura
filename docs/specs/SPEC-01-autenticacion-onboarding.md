@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Que el vendedor entre con Google o con un código por correo y, la primera vez, complete un onboarding de 5 pasos que personaliza la práctica. El onboarding tiene **una sola fuente de verdad** en el servidor (el MVP lo guardaba en dos lugares que se desincronizaban).
+Que el vendedor entre con un enlace mágico por correo (Supabase Auth, flujo PKCE) y, la primera vez, complete un onboarding de 5 pasos que personaliza la práctica. El onboarding tiene **una sola fuente de verdad** en el servidor (el MVP lo guardaba en dos lugares que se desincronizaban).
 
 ## Historia de usuario
 

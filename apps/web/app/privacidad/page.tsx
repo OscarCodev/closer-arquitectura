@@ -69,7 +69,7 @@ export default function PrivacyPage() {
               No vendemos tu información personal. Podemos compartir datos limitados con:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-sm">
-              <li><strong>Proveedores de infraestructura:</strong> servicios de autenticación (como Google/Supabase), alojamiento en la nube y procesamiento de IA, bajo estrictos acuerdos de confidencialidad.</li>
+              <li><strong>Proveedores de infraestructura:</strong> servicios de autenticación (Supabase), alojamiento en la nube y procesamiento de IA, bajo estrictos acuerdos de confidencialidad.</li>
               <li><strong>Requerimientos legales:</strong> cuando sea necesario para cumplir con obligaciones legales o proteger nuestros derechos.</li>
             </ul>
           </section>

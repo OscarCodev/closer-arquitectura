@@ -82,7 +82,7 @@ Criterios sin prueba automatizada (verificados manualmente): CA-04.1 a CA-04.5 d
 Escenarios en `apps/web/e2e/closer.e2e.spec.ts`:
 
 1. Sin sesión, `/setup` redirige al login.
-2. Usuario nuevo: login por código → onboarding de 5 pasos por la interfaz → `/setup`; al volver a entrar va directo.
+2. Usuario nuevo: login por enlace de correo → onboarding de 5 pasos por la interfaz → `/setup`; al volver a entrar va directo.
 3. Práctica completa: autogenerar escenario → llamada → consejo → colgar → resultado → reintento ("2 de 2") → historial.
 4. El prospecto de la práctica queda en la biblioteca y se puede eliminar.
 

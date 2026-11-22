@@ -24,7 +24,7 @@ Orden recomendado (cada paso usa datos del anterior):
 | 4 | Render | API en `https://closer-api.onrender.com` | 15 min |
 | 5 | GitHub (secretos) | Migraciones y despliegue automáticos | 5 min |
 | 6 | Vercel | Web en `https://<proyecto>.vercel.app` | 10 min |
-| 7 | Supabase Auth | Login con código y con Google | 10 min |
+| 7 | Supabase Auth | Login con enlace por correo | 5 min |
 | 8 | Dominio + Cloudflare | `app.<dominio>` y `api.<dominio>` con CDN | 20 min + propagación |
 
 Anota los valores en un lugar privado (no en el repo) a medida que los obtienes.
@@ -124,12 +124,10 @@ En Supabase → **Authentication**:
 1. **URL Configuration**:
    - *Site URL*: `https://<proyecto>.vercel.app`
    - *Redirect URLs*: agrega `https://<proyecto>.vercel.app/auth/callback` y `http://localhost:3000/auth/callback`.
-2. **Código por correo**: la pantalla de login pide un **código de 6 dígitos**. En *Emails → Templates*, en **Magic Link** y en **Confirm signup**, agrega al cuerpo `Tu código es: {{ .Token }}`.
-3. **Google (opcional)**:
-   - En https://console.cloud.google.com → *APIs & Services → Credentials → Create credentials → OAuth client ID* (tipo *Web application*).
-   - *Authorized redirect URI*: `https://<ref>.supabase.co/auth/v1/callback`.
-   - Copia *Client ID* y *Client secret* en Supabase → *Authentication → Sign In / Providers → Google*.
-4. **Correos (recomendado)**: el envío incluido en el plan gratuito tiene un límite bajo por hora, pensado para pruebas. Para la presentación puedes usar Google o configurar un SMTP gratuito (Resend o Brevo) en *Authentication → Emails → SMTP Settings*.
+2. **Enlace por correo**: el login usa el **enlace mágico** de Supabase con las plantillas por defecto (no requiere SMTP propio). El enlace vuelve a `/auth/callback`, donde la web canjea el código por la sesión (flujo PKCE), así que debe abrirse **en el mismo navegador** en el que se pidió. La *Redirect URL* del punto 1 es obligatoria.
+3. **Límite de correos**: el envío incluido en el plan gratuito permite pocos correos por hora (pensado para pruebas). La pantalla avisa cuando se alcanza el límite y permite reenviar el enlace tras 60 s. Antes de presentar, entra una vez para no gastar envíos en vivo: la sesión queda guardada en el navegador.
+
+El acceso es **solo por enlace de correo** (sin Google ni otros proveedores OAuth).
 
 Prueba: abre la URL de Vercel → **Iniciar sesión** → completa el onboarding → haz una práctica de voz (el navegador pedirá permiso de micrófono).
 
@@ -170,5 +168,7 @@ Con el proxy de Cloudflare activo, los archivos estáticos (`/_next/static/*`, c
 | `/health/ready` muestra `database: down` | Contraseña o cadena del pooler incorrecta | Revisa `DATABASE_URL` (puerto 6543 y `pgbouncer=true`) |
 | `/health/ready` muestra `redis: down` | URL de Upstash sin TLS | Debe empezar con `rediss://` |
 | 401 en todas las rutas tras iniciar sesión | `AUTH_JWT_SECRET` o `SUPABASE_URL` incorrectos | Revisa ambos en Render |
-| Llega un enlace pero no un código | Plantilla de correo sin `{{ .Token }}` | Paso 7.2 |
+| El enlace lleva a "No pudimos iniciar sesión" | Se abrió en otro navegador o app de correo, ya se usó o expiró | Pedir otro y abrirlo en el mismo navegador |
+| El enlace lleva a la página de inicio sin sesión | Falta la *Redirect URL* `/auth/callback` en Supabase | Paso 7.1 |
+| "Se enviaron demasiados correos" | Límite de correos del plan gratuito | Esperar unos minutos (el límite es por hora) |
 | La voz no conecta | `GEMINI_API_KEY` inválida o modelo no disponible | Revisa la clave; el error aparece en los logs de Render |

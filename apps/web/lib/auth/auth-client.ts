@@ -1,7 +1,8 @@
 /**
  * Cliente de autenticación con dos implementaciones intercambiables:
- *  - `supabase`: Supabase Auth real (Google OAuth y código por email).
- *  - `dev`: login local contra POST /auth/dev-token del backend (desarrollo y pruebas E2E).
+ *  - `supabase`: Supabase Auth real (enlace mágico por correo, flujo PKCE).
+ *  - `dev`: login local contra POST /auth/dev-token del backend (desarrollo y pruebas E2E);
+ *    pedir el enlace equivale a abrirlo: inicia sesión y redirige a `emailRedirectTo`.
  * Ambas exponen el mismo subconjunto de la API de Supabase que usan las pantallas.
  */
 import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -23,9 +24,10 @@ export type AuthClient = {
     getUser(): Result<{ user: User | null }>
     getSession(): Result<{ session: Session | null }>
     onAuthStateChange(callback: AuthListener): { data: { subscription: { unsubscribe: () => void } } }
-    signInWithOAuth(params: { provider: 'google'; options?: { redirectTo?: string } }): Result<unknown>
-    signInWithOtp(params: { email: string; options?: { shouldCreateUser?: boolean } }): Result<unknown>
-    verifyOtp(params: { email: string; token: string; type: 'email' }): Result<unknown>
+    signInWithOtp(params: {
+      email: string
+      options?: { shouldCreateUser?: boolean; emailRedirectTo?: string }
+    }): Result<unknown>
     signOut(): Result<unknown>
   }
 }
@@ -74,7 +76,7 @@ function writeDevSession(session: (Session & { expiresAt: number }) | null) {
   devListeners.forEach((listener) => listener(session ? 'SIGNED_IN' : 'SIGNED_OUT', session))
 }
 
-async function devSignIn(email: string, provider: 'email' | 'google') {
+async function devSignIn(email: string) {
   const response = await fetch(`${appConfig.apiUrl}/auth/dev-token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -85,7 +87,7 @@ async function devSignIn(email: string, provider: 'email' | 'google') {
   writeDevSession({
     access_token: data.accessToken,
     expiresAt: Date.now() + data.expiresIn * 1000 - 30_000,
-    user: { id: data.userId, email, app_metadata: { provider }, user_metadata: provider === 'google' ? { full_name: 'Usuario Demo' } : {} },
+    user: { id: data.userId, email, app_metadata: { provider: 'email' }, user_metadata: {} },
   })
   return null
 }
@@ -102,16 +104,10 @@ const devClient: AuthClient = {
       devListeners.add(callback)
       return { data: { subscription: { unsubscribe: () => devListeners.delete(callback) } } }
     },
-    async signInWithOAuth({ options }) {
-      const error = await devSignIn('demo@closer.test', 'google')
-      if (!error) window.location.assign(options?.redirectTo || '/auth/callback')
+    async signInWithOtp({ email, options }) {
+      const error = await devSignIn(email)
+      if (!error) window.location.assign(options?.emailRedirectTo || '/auth/callback')
       return { data: null, error }
-    },
-    async signInWithOtp() {
-      return { data: null, error: null }
-    },
-    async verifyOtp({ email }) {
-      return { data: null, error: await devSignIn(email, 'email') }
     },
     async signOut() {
       writeDevSession(null)

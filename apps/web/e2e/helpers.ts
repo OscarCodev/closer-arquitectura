@@ -5,13 +5,11 @@ const API_URL = process.env.E2E_API_URL ?? 'http://localhost:4000/api/v1'
 /** Correo único por prueba: cada prueba empieza con un usuario nuevo. */
 export const uniqueEmail = (tag: string) => `e2e-${tag}-${Date.now()}-${Math.floor(Math.random() * 1e4)}@closer.test`
 
-/** Login por la interfaz con código por correo (en modo desarrollo cualquier código vale). */
+/** Login por la interfaz con enlace por correo (en modo desarrollo pedir el enlace equivale a abrirlo). */
 export async function loginWithEmail(page: Page, email: string) {
   await page.goto('/iniciar-sesion')
   await page.getByPlaceholder('ejemplo@correo.com').fill(email)
-  await page.getByRole('button', { name: 'Continuar con el correo' }).click()
-  await page.getByPlaceholder('Ingresa el código').fill('123456')
-  await page.getByPlaceholder('Ingresa el código').press('Enter')
+  await page.getByRole('button', { name: 'Enviar enlace de acceso' }).click()
 }
 
 /** Completa los 5 pasos del onboarding por la interfaz. */
