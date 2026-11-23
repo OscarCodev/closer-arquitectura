@@ -1,6 +1,6 @@
 # Diseño interno de módulos
 
-Proyecto: Closer. Módulos de referencia: Sesiones de práctica y Evaluación y coaching. Los nombres de archivos y clases siguientes son una propuesta para la implementación, no código existente.
+Proyecto: Closer. Módulos de referencia: Sesiones de práctica y Evaluación y coaching. Las secciones siguientes conservan la propuesta del Sprint 1. La sección **[Cómo quedó implementado (Sprint 2)](#cómo-quedó-implementado-sprint-2)** relaciona cada nombre propuesto con el código real.
 
 ## Organización propuesta
 
@@ -64,3 +64,30 @@ Si preparar voz falla, cancelar la sesión y compensar la reserva de cuota. El c
 ## Verificación prevista
 
 Probar estados inválidos, acceso ajeno, cierre repetido, solicitudes concurrentes de evaluación, timeout del proveedor y resultados malformados. Usar repositorios en memoria para reglas y pruebas de integración para transacciones y RLS.
+
+## Cómo quedó implementado (Sprint 2)
+
+Decisión durante la implementación: **Sesiones y Evaluación se unieron en un solo módulo `practice`**, porque comparten las mismas entidades (una sesión tiene varios intentos y cada intento se evalúa) y separarlas obligaba a una fachada sin beneficio. Los estados se simplificaron a los de una llamada real: `IN_CALL → EVALUATING → COMPLETED | FAILED`.
+
+```text
+apps/api/src/modules/practice/
+├── domain/          practice-session.ts, evaluation.ts, scoring.ts, transcript.ts, voice-metrics.ts, prospect-persona.ts
+├── application/     start-simulation.use-case.ts, evaluate-simulation.use-case.ts, sessions.use-cases.ts, ai-assist.use-cases.ts
+│                    ports.ts  (PracticeRepositoryPort, ConversationAiPort, LiveVoicePort)
+├── infrastructure/  prisma-practice.repository.ts, ai/gemini-conversation-ai.adapter.ts, ai/gemini-live-voice.adapter.ts, ai/fake-ai.adapters.ts
+├── presentation/    simulations.controller.ts, sessions.controller.ts, assist.controller.ts, practice.dto.ts
+└── practice.module.ts   composición: enlaza cada puerto con su adaptador
+```
+
+| Propuesto (Sprint 1) | Implementado (Sprint 2) | Comentario |
+|---|---|---|
+| `SesionPractica` (PREPARADA → EN_CURSO → FINALIZADA) | `PracticeSession` + `Simulation` con `SimulationStatus` ([`practice-session.ts`](../../../apps/api/src/modules/practice/domain/practice-session.ts)) | Una sesión agrupa varios intentos (reintentos) |
+| `Evaluacion` | `assembleEvaluation` ([`evaluation.ts`](../../../apps/api/src/modules/practice/domain/evaluation.ts)) y [`scoring.ts`](../../../apps/api/src/modules/practice/domain/scoring.ts) | Valida la respuesta de la IA; el puntaje lo calcula el servidor |
+| `IniciarSimulacion` | `StartSimulationUseCase` ([`start-simulation.use-case.ts`](../../../apps/api/src/modules/practice/application/start-simulation.use-case.ts)) | Crea la sesión y el intento y emite el token efímero de voz |
+| `FinalizarSesion` + `EvaluarSesion` | `EvaluateSimulationUseCase` ([`evaluate-simulation.use-case.ts`](../../../apps/api/src/modules/practice/application/evaluate-simulation.use-case.ts)) | Cerrar y evaluar es una sola operación idempotente |
+| `RepositorioSesiones` / `RepositorioEvaluaciones` | `PracticeRepositoryPort` → `PrismaPracticeRepository` | Un solo repositorio para el agregado sesión–intentos |
+| `EvaluadorConversacion` → `EvaluadorGemini` | `ConversationAiPort` → `GeminiConversationAiAdapter` | Suma operaciones: extracción de perfil, coach y escenarios |
+| `ProveedorVoz` → `AdaptadorVozGemini` | `LiveVoicePort` → `GeminiLiveVoiceAdapter` | Token efímero con prompt y modelo bloqueados (ADR-007) |
+| `repositorio-*-supabase.ts` | Prisma sobre el PostgreSQL de Supabase | Supabase se usa como PostgreSQL administrado y para Auth |
+
+Los demás módulos siguen la misma estructura: `identity` (token y onboarding), `profiles` (biblioteca de prospectos), `support` (contacto) y `health` (salud y métricas), más `shared` (caché, límites de uso, errores y configuración).

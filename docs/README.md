@@ -14,7 +14,7 @@ La documentación sigue el orden del proyecto: análisis y propuesta (Sprint 1),
 - [Atributos de calidad](01-analisis-de-sistema/04-atributos-de-calidad.md)
 - [Restricciones](01-analisis-de-sistema/05-restricciones.md)
 - [Drivers arquitectónicos](01-analisis-de-sistema/06-driver-arquitectonicos.md)
-- [Decisiones arquitectónicas (ADR-001 a ADR-010)](01-analisis-de-sistema/07-decisiones-arquitectonicas.md) · actualizado con la implementación
+- [Decisiones arquitectónicas (ADR-001 a ADR-011)](01-analisis-de-sistema/07-decisiones-arquitectonicas.md) · actualizado con la implementación
 - [Escenarios de atributos de calidad](01-analisis-de-sistema/08-escenarios-atributos-calidad.md) · con el estado de verificación de cada uno
 
 ## 2. Arquitectura de software
@@ -25,12 +25,13 @@ La documentación sigue el orden del proyecto: análisis y propuesta (Sprint 1),
 - [Componentes arquitectónicos](02-arquitectura-software/componentes-arquitectonicos.md)
 - [ADR-008 · Caché y rate limiting con Redis](arquitectura/ADR-008-cache-redis.md)
 - [ADR-009 · Escalabilidad horizontal](arquitectura/ADR-009-escalabilidad.md)
+- [Análisis de la base de datos y de la estrategia de caché](arquitectura/analisis-bd-cache.md) · índices, concurrencia, conexiones y resultados medidos
 
 ## 3. Diseño interno
 
-- [Diseño interno de módulos](03-diseño-de-software/diseño-interno/diseño-interno-de-modulos.md)
-- [Patrones de diseño](03-diseño-de-software/diseño-interno/patrones-de-diseño.md)
-- [Principios de diseño (SOLID)](03-diseño-de-software/diseño-interno/principios-de-diseño.md)
+- [Diseño interno de módulos](03-diseño-de-software/diseño-interno/diseño-interno-de-modulos.md) · propuesta y cómo quedó implementado
+- [Patrones de diseño](03-diseño-de-software/diseño-interno/patrones-de-diseño.md) · propuestos y presentes en el código
+- [Principios de diseño (SOLID)](03-diseño-de-software/diseño-interno/principios-de-diseño.md) · con su ubicación en el código
 
 ## 4. Modelo C4
 
