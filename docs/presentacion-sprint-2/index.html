@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Closer · Sprint 2</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b1030;
+    --navy-2: #151c4a;
+    --ink: #0f172a;
+    --ink-2: #334155;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --paper: #f6f7fb;
+    --card: #ffffff;
+    --yellow: #ffc531;
+    --blue: #2563eb;
+    --violet: #7c3aed;
+    --green: #059669;
+    --pink: #db2777;
+    --cyan: #0891b2;
+    --orange: #ea580c;
+    --blue-soft: #e8efff;
+    --violet-soft: #f1eafe;
+    --green-soft: #e3f7ef;
+    --pink-soft: #fde8f2;
+    --cyan-soft: #e0f6fa;
+    --yellow-soft: #fff6db;
+    --orange-soft: #fff0e6;
+  }
+  html, body { background: var(--paper); }
+  .reveal-viewport { background: var(--paper); }
+  .reveal .slides > section, .reveal .slides > section > .s { width: 100%; }
+  .reveal { font-family: 'Poppins', system-ui, sans-serif; color: var(--ink); }
+  .reveal .slides { text-align: left; }
+  .reveal .slides section { height: 100%; padding: 0; }
+  .reveal .slides > section { background: var(--paper); }
+  .reveal a { color: var(--blue); text-decoration: none; border-bottom: 2px solid rgba(37,99,235,.25); }
+  .reveal a:hover { border-bottom-color: var(--blue); }
+  .reveal code, .mono, .reveal pre.code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .reveal b, .reveal strong { font-weight: 700; }
+  .reveal h3 { font-weight: 700; }
+  .nowrap { white-space: nowrap; }
+
+  /* ── Estructura de cada diapositiva ── */
+  .s { position: relative; height: 720px; box-sizing: border-box; padding: 44px 64px 40px; display: flex; flex-direction: column; }
+  .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+  .kicker .num { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--yellow); color: var(--navy); font-size: 18px; letter-spacing: 0; }
+  .s h2 { margin: 6px 0 6px; font-size: 46px; line-height: 1.08; font-weight: 800; color: var(--ink); letter-spacing: -.02em; text-transform: none; }
+  .s h2 em { font-style: normal; color: var(--blue); }
+  .lead { font-size: 24px; color: var(--ink-2); margin: 0 0 18px; line-height: 1.35; }
+  .body { flex: 1; min-height: 0; display: grid; gap: 22px; }
+  .foot { position: absolute; left: 64px; right: 140px; bottom: 16px; display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+  .foot b { color: var(--ink-2); font-weight: 600; }
+
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-60 { grid-template-columns: 1.25fr 1fr; }
+  .cols-40 { grid-template-columns: 1fr 1.25fr; }
+
+  .card { background: var(--card); border-radius: 18px; padding: 20px 22px; box-shadow: 0 1px 0 var(--line), 0 10px 30px -18px rgba(15,23,42,.25); border: 1px solid var(--line); }
+  .card h3 { margin: 0 0 8px; font-size: 25px; font-weight: 700; color: var(--ink); text-transform: none; letter-spacing: -.01em; line-height: 1.2; }
+  .card p { margin: 0; font-size: 19px; line-height: 1.4; color: var(--ink-2); }
+  .card.accent { border-left: 8px solid var(--c, var(--blue)); }
+  .tint { background: var(--bg, var(--blue-soft)); border: none; box-shadow: none; }
+
+  .chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 15px; font-weight: 600; background: var(--bg, var(--blue-soft)); color: var(--c, var(--blue)); }
+  .ok   { --bg: var(--green-soft); --c: var(--green); }
+  .warn { --bg: var(--yellow-soft); --c: #a16207; }
+  .todo { --bg: #eef2f7; --c: var(--muted); }
+
+  ul.clean { list-style: none; margin: 0; padding: 0; }
+  ul.clean li { position: relative; padding-left: 30px; margin: 0 0 10px; font-size: 21px; line-height: 1.35; color: var(--ink-2); }
+  ul.clean li::before { content: ''; position: absolute; left: 4px; top: 11px; width: 12px; height: 12px; border-radius: 4px; background: var(--c, var(--blue)); }
+  ul.clean li b { color: var(--ink); }
+
+  .shot { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -22px rgba(15,23,42,.45); background: #fff; }
+  .shot img { display: block; width: 100%; height: auto; margin: 0; }
+  .cap { font-size: 15px; color: var(--muted); margin-top: 8px; }
+
+  .big { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -.03em; color: var(--c, var(--ink)); }
+  .big small { font-size: 28px; font-weight: 700; }
+  .label { font-size: 17px; color: var(--muted); margin-top: 6px; line-height: 1.3; }
+
+  pre.code { margin: 0; padding: 16px 18px; border-radius: 14px; background: var(--navy); color: #e2e8f0; font-size: 15.5px; line-height: 1.55; overflow: hidden; box-shadow: none; width: auto; }
+  pre.code .k { color: #93c5fd; } pre.code .s2 { color: #fcd34d; } pre.code .c { color: #94a3b8; } pre.code .f { color: #6ee7b7; }
+
+  table.t { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 18px; }
+  table.t th { text-align: left; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; padding: 0 12px 8px; border-bottom: 2px solid var(--line); }
+  table.t td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
+  table.t td b { color: var(--ink); }
+
+  /* ── Portada y cierre (fondo oscuro) ── */
+  .dark { background: radial-gradient(1200px 600px at 85% -10%, #2b3aa8 0%, transparent 60%), radial-gradient(900px 500px at -10% 110%, #5b21b6 0%, transparent 55%), var(--navy); color: #fff; }
+  .dark h1, .dark h2 { color: #fff; }
+  .logos { display: flex; align-items: center; gap: 18px; }
+  .logo-badge { width: 92px; height: 92px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .logo-badge img { max-width: 72px; max-height: 76px; margin: 0; }
+  .inst { font-size: 17px; line-height: 1.4; color: #cbd5f5; }
+  .inst b { color: #fff; font-weight: 700; display: block; font-size: 19px; }
+  .cover-title { font-size: 112px; font-weight: 800; letter-spacing: -.04em; line-height: .95; margin: 0; }
+  .cover-sub { font-size: 32px; font-weight: 600; color: var(--yellow); margin-top: 14px; }
+  .cover-desc { font-size: 22px; color: #cbd5f5; margin-top: 12px; max-width: 760px; line-height: 1.4; }
+  .people { display: flex; gap: 46px; }
+  .people div { font-size: 16px; color: #a5b4fc; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .people span { display: block; margin-top: 4px; font-size: 23px; color: #fff; text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+  /* ── Portada clara con esferas azul–celeste ── */
+  .cover { background: linear-gradient(160deg, #ffffff 0%, #f3f8ff 55%, #e6f3ff 100%); overflow: hidden; padding: 40px 72px 44px; }
+  .orb { position: absolute; border-radius: 50%; pointer-events: none; box-shadow: inset -18px -24px 50px rgba(15,40,120,.25); }
+  .orb.blur { box-shadow: none; }
+  .cover-head { position: relative; display: grid; grid-template-columns: 96px 1fr 96px; align-items: center; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid rgba(37,99,235,.18); }
+  .cover-logo { width: 96px; height: 96px; object-fit: contain; margin: 0; }
+  .cover-inst { text-align: center; line-height: 1.35; }
+  .cover-inst b { display: block; font-size: 22px; color: #0b1736; font-weight: 700; }
+  .cover-inst span { display: block; font-size: 17px; color: #475569; }
+
+  /* ── Diagramas ── */
+  .box { border-radius: 14px; padding: 12px 14px; font-weight: 600; font-size: 18px; text-align: center; background: var(--bg); color: var(--c); border: 2px solid var(--c); line-height: 1.25; }
+  .box small { display: block; font-weight: 500; font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+  .arrow-down { text-align: center; font-size: 26px; line-height: 1; color: var(--muted); margin: 4px 0; }
+
+  .layers { display: grid; gap: 10px; }
+  .layer { display: grid; grid-template-columns: 210px 1fr; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 14px; background: var(--bg); }
+  .layer b { font-size: 21px; color: var(--c); }
+  .layer span { font-size: 16.5px; color: var(--ink-2); line-height: 1.35; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+  .step .n { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--c); color: #fff; font-weight: 800; font-size: 20px; }
+  .step h3 { margin: 12px 0 6px; font-size: 23px; text-transform: none; color: var(--ink); }
+  .step p { margin: 0; font-size: 18px; color: var(--ink-2); line-height: 1.38; }
+
+  /* ── Enlaces al código en GitHub ── */
+  .foot.gh-row { justify-content: flex-start; align-items: center; gap: 8px; flex-wrap: wrap; bottom: 14px; }
+  .gh-label { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+  .reveal a.gh { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); line-height: 1.4; }
+  .reveal a.gh::before { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--blue); }
+  .reveal a.gh.code::before { content: '</>'; }
+  .reveal a.gh.doc::before { content: '¶'; color: var(--violet); font-size: 14px; }
+  .reveal a.gh.run::before { content: '▶'; color: var(--green); font-size: 11px; }
+  .reveal a.gh.data::before { content: '▦'; color: var(--orange); font-size: 13px; }
+  .reveal a.gh:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* ── PDF: Chromium dibuja un borde alrededor del texto con degradado; al imprimir se usa azul sólido ── */
+  html.print-pdf [style*="background-clip"] { background: none !important; color: #1d4ed8 !important; -webkit-text-fill-color: #1d4ed8 !important; }
+
+  /* ── Gráficos ── */
+  .meter { margin: 0 0 30px; }
+  .meter .top { display: flex; justify-content: space-between; align-items: baseline; font-size: 18px; color: var(--ink-2); margin-bottom: 6px; }
+  .meter .top b { color: var(--ink); font-size: 22px; }
+  .track { position: relative; height: 22px; border-radius: 6px; background: #e9edf5; }
+  .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--c, var(--blue)); }
+  .goal { position: absolute; top: -6px; bottom: -6px; width: 3px; background: var(--ink); border-radius: 2px; }
+  .goal::after { content: attr(data-l); position: absolute; top: calc(100% + 2px); left: 50%; transform: translateX(-50%); font-size: 13px; color: var(--ink-2); white-space: nowrap; font-weight: 600; }
+
+  .pyr { display: grid; gap: 8px; justify-items: center; }
+  .pyr div { border-radius: 12px; color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; height: 62px; font-size: 20px; box-sizing: border-box; }
+  .pyr div span { font-size: 30px; font-weight: 800; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; }
+
+  .eq { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .eq .card { padding: 16px 18px; }
+  .eq h3 { font-size: 20px; margin-bottom: 6px; }
+  .eq p { font-size: 15.5px; }
+
+  .links { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+  .lnk { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .lnk i { font-style: normal; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; color: #fff; background: var(--c); font-size: 15px; }
+  .lnk b { display: block; font-size: 18px; color: var(--ink); }
+  .lnk a { font-size: 15px; white-space: nowrap; }
+
+  /* ── Base de datos: barra de proporción, modelo de datos y tarjetas problema → solución ── */
+  .split { display: flex; height: 30px; border-radius: 8px; overflow: hidden; font-size: 14px; font-weight: 700; color: #fff; margin-top: 12px; }
+  .split div { display: flex; align-items: center; padding: 0 10px; white-space: nowrap; }
+  .er { display: grid; grid-template-columns: 1fr 18px 1.2fr 18px 1fr; gap: 5px 6px; align-items: center; }
+  .er .box { padding: 5px 8px !important; }
+  .er .box { font-size: 15.5px; padding: 7px 8px; }
+  .er .box small { font-size: 12.5px; font-family: 'JetBrains Mono', monospace; }
+  .er .ar { text-align: center; color: var(--muted); font-size: 18px; line-height: 1; }
+  .idx { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; margin-top: 10px; }
+  .idx .mono { font-size: 13.5px; background: var(--blue-soft); color: var(--blue); padding: 4px 8px; border-radius: 8px; white-space: nowrap; font-weight: 600; }
+  .idx span:not(.mono) { font-size: 16px; color: var(--ink-2); line-height: 1.3; }
+  .pr { display: flex; flex-direction: column; gap: 9px; padding: 14px 16px; }
+  .pr .hd { display: flex; align-items: center; gap: 10px; }
+  .pr .hd .n { flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--c); color: #fff; font-weight: 800; font-size: 17px; }
+  .pr .hd h3 { margin: 0; font-size: 20px; line-height: 1.15; }
+  .pr .row { display: grid; grid-template-columns: 78px 1fr; gap: 8px; align-items: start; }
+  .pr .tag { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 0; border-radius: 6px; text-align: center; background: var(--bg); color: var(--fg); }
+  .pr .tag.tp { --bg: var(--pink-soft); --fg: var(--pink); }
+  .pr .tag.ts { --bg: var(--blue-soft); --fg: var(--blue); }
+  .pr .row p { font-size: 15px; line-height: 1.35; }
+  .pr .viz { background: var(--paper); border-radius: 12px; padding: 8px 10px; font-size: 14px; color: var(--ink-2); display: grid; gap: 5px; }
+  .pr .viz .ln { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .pr .viz .pill { padding: 2px 8px; border-radius: 999px; font-weight: 600; font-size: 13px; background: #fff; border: 1px solid var(--line); white-space: nowrap; }
+  .pr .res { margin-top: auto; display: flex; align-items: baseline; gap: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .pr .res b { font-size: 30px; font-weight: 800; color: var(--c); line-height: 1; white-space: nowrap; }
+  .pr .res span { font-size: 14.5px; color: var(--ink-2); line-height: 1.25; }
+  table.t.tight td { padding: 6px 10px; }
+  table.t.tight th { padding: 0 10px 6px; }
+  .pr .viz .mono { overflow-wrap: anywhere; }
+  .limit { display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 14px; align-items: center; padding: 8px 18px; }
+  .limit h3 { margin: 0; font-size: 18px; color: #9a3412; line-height: 1.2; }
+  .limit p { font-size: 14.5px; line-height: 1.3; }
+  .limit p b { font-size: 19px; }
+
+  .reveal .progress { color: var(--yellow); height: 5px; }
+  .reveal .slide-number { background: transparent; color: var(--muted); font-family: 'Poppins', sans-serif; font-size: 14px; right: 24px; bottom: 14px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- 1 · PORTADA -->
+<section data-background-gradient="linear-gradient(160deg, #ffffff 0%, #f3f8ff 55%, #e6f3ff 100%)">
+  <div class="s cover">
+    <div class="orb" style="width:470px; height:470px; right:-240px; top:175px; background:radial-gradient(circle at 30% 30%, #7dd3fc 0%, #3b82f6 55%, #1d4ed8 100%); opacity:.9;"></div>
+    <div class="orb" style="width:300px; height:300px; left:-225px; bottom:-215px; background:radial-gradient(circle at 35% 30%, #bae6fd 0%, #38bdf8 55%, #2563eb 100%); opacity:.75;"></div>
+
+    <div class="cover-head">
+      <img class="cover-logo" src="img/logo-sistemas.png" alt="Logo de la Escuela Profesional de Ingeniería de Sistemas">
+      <div class="cover-inst">
+        <b>Universidad Nacional de San Cristóbal de Huamanga</b>
+        <span>Facultad de Ingeniería de Minas, Geología y Civil</span>
+        <span>Escuela Profesional de Ingeniería de Sistemas</span>
+      </div>
+      <img class="cover-logo" src="img/logo-unsch.png" alt="Logo de la Universidad Nacional de San Cristóbal de Huamanga">
+    </div>
+
+    <div style="position:relative; flex:1; display:flex; flex-direction:column; justify-content:center; max-width:760px;">
+      <div class="kicker" style="color:#2563eb;">Arquitectura de Software · IS-488 · Semestre 2026-II</div>
+      <div style="display:flex; align-items:center; gap:24px; margin-top:6px;">
+        <img src="img/closer-icon.svg" alt="Ícono de Closer" style="width:104px; height:104px; margin:0; border-radius:24px; box-shadow:0 14px 30px -12px rgba(29,78,216,.55);">
+        <h1 class="cover-title" style="color:#0b1736;">Closer</h1>
+      </div>
+      <div class="cover-sub" style="background:linear-gradient(90deg,#1d4ed8,#0ea5e9); -webkit-background-clip:text; background-clip:text; color:transparent;">Sprint 2 · Implementación y validación de la arquitectura</div>
+      <div class="cover-desc" style="color:#475569;">Simulador de llamadas de venta con IA de voz: practicas con un cliente virtual y recibes una evaluación al instante.</div>
+    </div>
+
+    <div class="people" style="position:relative;">
+      <div style="color:#2563eb;">Estudiante<span style="color:#0b1736;">Oscar Abel Bautista Ayala</span></div>
+      <div style="color:#2563eb;">Docente de laboratorio<span style="color:#0b1736;">Ing. Lizbeth Jaico Quispe</span></div>
+    </div>
+  </div>
+  <aside class="notes">Presentarse. Closer es un simulador de llamadas de venta: el vendedor habla por voz con un prospecto generado por IA y al colgar recibe una evaluación. En el Sprint 2 llevamos al código la arquitectura del Sprint 1 y la validamos con pruebas.</aside>
+</section>
+
+<!-- 2 · CLOSER EN 1 MINUTO -->
+<section>
+  <div class="s">
+    <div class="kicker">El producto</div>
+    <h2>Closer en <em>1 minuto</em></h2>
+    <div class="body cols-60" style="align-items:start;">
+      <div class="steps" style="grid-template-columns:1fr; gap:12px;">
+        <div class="step" style="--c:var(--blue); display:grid; grid-template-columns:52px 1fr; gap:14px; align-items:start;"><div class="n">1</div><div><h3 style="margin-top:2px;">Prepara la llamada</h3><p>Describe qué vendes y a quién: la IA arma un prospecto con su personalidad y objeciones.</p></div></div>
+        <div class="step" style="--c:var(--violet); display:grid; grid-template-columns:52px 1fr; gap:14px; align-items:start;"><div class="n">2</div><div><h3 style="margin-top:2px;">Habla por voz en tiempo real</h3><p>El navegador conversa con Gemini Live mediante un token efímero que emite el backend.</p></div></div>
+        <div class="step" style="--c:var(--green); display:grid; grid-template-columns:52px 1fr; gap:14px; align-items:start;"><div class="n">3</div><div><h3 style="margin-top:2px;">Recibe tu evaluación</h3><p>El servidor califica cada turno, calcula el puntaje y lo guarda en tu historial.</p></div></div>
+      </div>
+      <div>
+        <div class="shot"><img src="img/app-inicio.jpg" alt="Página de inicio de Closer"></div>
+        <div class="cap">Captura real · <a href="https://closer-arquitectura.vercel.app" target="_blank" rel="noopener">closer-arquitectura.vercel.app</a></div>
+      </div>
+    </div>
+    <div class="foot"><span><b>Usuarios:</b> vendedores, SDR, AE y emprendedores</span></div>
+  </div>
+  <aside class="notes">Tres pasos: preparar, hablar y recibir evaluación. Lo importante para la arquitectura: la voz va directo del navegador a Gemini, pero con credenciales que controla el backend; la evaluación siempre la calcula el servidor.</aside>
+</section>
+
+<!-- 3 · DEL SPRINT 1 AL CÓDIGO -->
+<section>
+  <div class="s">
+    <div class="kicker">Criterio fundamental</div>
+    <h2>Del Sprint 1 al código: <em>todo se cumplió</em></h2>
+    <div class="body" style="grid-template-columns:1fr;">
+      <table class="t" style="font-size:17px;">
+        <thead><tr><th style="width:120px;">Decisión</th><th>Lo documentado</th><th>Cómo quedó en el código</th><th style="width:120px;">Estado</th></tr></thead>
+        <tbody>
+          <tr><td><b>ADR-001</b></td><td>Monolito modular</td><td>NestJS 11 con 5 módulos de negocio y un núcleo compartido</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-002</b></td><td>Clean Architecture</td><td>4 capas por módulo; ESLint bloquea las dependencias prohibidas</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-003</b></td><td>Separar voz y gestión</td><td>REST <span class="mono">/api/v1</span> para gestión; voz por WSS directo a Gemini Live</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-004</b></td><td>Puertos y adaptadores</td><td><span class="mono">ConversationAiPort</span>, <span class="mono">LiveVoicePort</span>, <span class="mono">CachePort</span>…</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-005</b></td><td>PostgreSQL (Supabase)</td><td>Prisma con migraciones versionadas e índices por usuario</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-006</b></td><td>Evaluación idempotente</td><td>Estados <span class="mono">IN_CALL → EVALUATING → COMPLETED/FAILED</span> con compare-and-set</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>ADR-007</b></td><td>Secretos solo en el servidor</td><td>Token efímero de un solo uso; la API key nunca llega al navegador</td><td><span class="chip ok">Cumple</span></td></tr>
+          <tr><td><b>Nuevas</b></td><td>Surgieron al construir</td><td>ADR-008 caché con Redis · ADR-010 puntaje solo en servidor · ADR-011 RLS en Supabase</td><td><span class="chip">Agregadas</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="foot"><span>Detalle: <a href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/01-analisis-de-sistema/07-decisiones-arquitectonicas.md" target="_blank" rel="noopener">docs/01-analisis-de-sistema/07-decisiones-arquitectonicas.md</a></span></div>
+  </div>
+  <aside class="notes">Esta es la idea central de la sustentación: lo que documentamos en el Sprint 1 está en el código. Las siete decisiones se implementaron y aparecieron tres nuevas al construir. En las siguientes diapositivas muestro la evidencia de cada actividad.</aside>
+</section>
+
+<!-- 4 · ACTIVIDAD 1: ESTILO -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">1</span>Estilo arquitectónico</div>
+    <h2>Monolito <em>modular</em></h2>
+    <p class="lead">Un solo despliegue del backend, dividido en módulos con fronteras claras.</p>
+    <div class="body cols-60" style="align-items:start;">
+      <div>
+        <div class="box" style="--bg:var(--blue-soft); --c:var(--blue);">Aplicación web<small>Next.js 16 · React 19 · TypeScript</small></div>
+        <div class="arrow-down">↓ <span style="font-size:15px;">HTTPS · REST /api/v1</span></div>
+        <div class="card" style="padding:14px; border:2px dashed var(--green); background:#f3fbf7;">
+          <div style="font-weight:700; font-size:19px; color:var(--green); margin-bottom:10px; text-align:center;">API Closer · NestJS 11 · un solo proceso</div>
+          <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+            <div class="box" style="--bg:#fff; --c:var(--green); font-size:16px; padding:10px 6px;">identity<small>login y onboarding</small></div>
+            <div class="box" style="--bg:#fff; --c:var(--green); font-size:16px; padding:10px 6px;">profiles<small>biblioteca</small></div>
+            <div class="box" style="--bg:#fff; --c:var(--green); font-size:16px; padding:10px 6px;">practice<small>llamadas y evaluación</small></div>
+            <div class="box" style="--bg:#fff; --c:var(--green); font-size:16px; padding:10px 6px;">support<small>contacto</small></div>
+            <div class="box" style="--bg:#fff; --c:var(--green); font-size:16px; padding:10px 6px;">health<small>salud y métricas</small></div>
+          </div>
+          <div class="box" style="--bg:#fff; --c:var(--muted); font-size:16px; margin-top:8px; padding:8px;">shared · caché, límites de uso, errores y configuración</div>
+        </div>
+        <div class="arrow-down">↓</div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+          <div class="box" style="--bg:var(--yellow-soft); --c:#a16207; font-size:16px;">PostgreSQL<small>Supabase</small></div>
+          <div class="box" style="--bg:var(--yellow-soft); --c:#a16207; font-size:16px;">Redis<small>caché</small></div>
+          <div class="box" style="--bg:var(--pink-soft); --c:var(--pink); font-size:16px;">Gemini<small>texto y voz</small></div>
+          <div class="box" style="--bg:var(--pink-soft); --c:var(--pink); font-size:16px;">Supabase Auth<small>JWT</small></div>
+        </div>
+      </div>
+      <div class="card accent" style="--c:var(--green);">
+        <h3>¿Por qué monolito modular?</h3>
+        <ul class="clean" style="--c:var(--green); margin-top:10px;">
+          <li><b>Simple de operar:</b> un proceso, una base de datos, sin coordinación distribuida.</li>
+          <li><b>Fronteras claras:</b> cada módulo expone controladores y casos de uso propios.</li>
+          <li><b>Listo para crecer:</b> la API no guarda estado, así que se puede replicar.</li>
+        </ul>
+        <p style="margin-top:12px; font-size:16px;">Código: <a href="https://github.com/OscarCodev/closer-arquitectura/tree/main/apps/api/src/modules" target="_blank" rel="noopener">apps/api/src/modules</a></p>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/tree/main/apps/api/src/modules" target="_blank" rel="noopener">apps/api/src/modules</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/app.module.ts" target="_blank" rel="noopener">app.module.ts</a></div>
+  </div>
+  <aside class="notes">El backend es un monolito modular: un solo proceso NestJS con cinco módulos de negocio. Cada módulo tiene sus propios controladores, casos de uso y repositorios. Es la decisión ADR-001 tal cual se documentó.</aside>
+</section>
+
+<!-- 5 · ACTIVIDAD 2: CLEAN ARCHITECTURE -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">2</span>Enfoque arquitectónico</div>
+    <h2>Clean Architecture <em>en cada módulo</em></h2>
+    <div class="body cols-2" style="align-items:start;">
+      <div>
+        <div class="layers">
+          <div class="layer" style="--bg:var(--blue-soft); --c:var(--blue);"><b>presentation</b><span>Controladores HTTP, DTO validados y Swagger</span></div>
+          <div class="layer" style="--bg:var(--violet-soft); --c:var(--violet);"><b>infrastructure</b><span>Prisma, Redis, Gemini y Supabase: implementan los puertos</span></div>
+          <div class="layer" style="--bg:var(--green-soft); --c:var(--green);"><b>application</b><span>Casos de uso y <b>puertos</b> (interfaces)</span></div>
+          <div class="layer" style="--bg:var(--yellow-soft); --c:#a16207;"><b>domain</b><span>Reglas puras: estados, puntaje, transcripción</span></div>
+        </div>
+        <p style="font-size:19px; color:var(--ink-2); margin:14px 0 0;">Las dependencias apuntan <b>hacia adentro</b>: el dominio no conoce ni Nest, ni Prisma, ni Gemini.</p>
+      </div>
+      <div>
+        <div class="shot" style="max-width:88%;"><img src="img/repo-modulo-practice.jpg" alt="Carpetas del módulo practice en GitHub"></div>
+        <div class="cap">Módulo <span class="mono">practice</span> en <a href="https://github.com/OscarCodev/closer-arquitectura/tree/main/apps/api/src/modules/practice" target="_blank" rel="noopener">GitHub</a></div>
+        <pre class="code" style="margin-top:10px; font-size:14px; line-height:1.45;"><span class="c">// eslint.config.mjs: el CI falla si se rompe la regla</span>
+<span class="k">files</span>: [<span class="s2">'src/**/domain/**'</span>],
+<span class="f">group</span>: [<span class="s2">'@nestjs/*'</span>, <span class="s2">'@prisma/*'</span>, <span class="s2">'ioredis'</span>, <span class="s2">'@google/genai'</span>]
+<span class="c">// "El dominio no puede depender de frameworks ni proveedores."</span></pre>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/eslint.config.mjs" target="_blank" rel="noopener">eslint.config.mjs</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/tree/main/apps/api/src/modules/practice" target="_blank" rel="noopener">módulo practice</a></div>
+  </div>
+  <aside class="notes">Cada módulo tiene las cuatro capas. La clave es que la regla no depende de la disciplina: ESLint prohíbe que el dominio importe frameworks o proveedores y que la aplicación importe infraestructura. Si alguien lo rompe, el CI falla.</aside>
+</section>
+
+<!-- 6 · ACTIVIDAD 3: SDD -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">3</span>Especificaciones SDD</div>
+    <h2><em>8 especificaciones</em> guían el desarrollo</h2>
+    <div class="body cols-40" style="align-items:start;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="card tint" style="--bg:var(--blue-soft); padding:12px 14px;"><b style="color:var(--blue);">SPEC-01</b><p style="font-size:16px;">Autenticación y onboarding</p></div>
+        <div class="card tint" style="--bg:var(--blue-soft); padding:12px 14px;"><b style="color:var(--blue);">SPEC-02</b><p style="font-size:16px;">Biblioteca de prospectos</p></div>
+        <div class="card tint" style="--bg:var(--violet-soft); padding:12px 14px;"><b style="color:var(--violet);">SPEC-03</b><p style="font-size:16px;">Iniciar práctica</p></div>
+        <div class="card tint" style="--bg:var(--violet-soft); padding:12px 14px;"><b style="color:var(--violet);">SPEC-04</b><p style="font-size:16px;">Llamada y coach</p></div>
+        <div class="card tint" style="--bg:var(--green-soft); padding:12px 14px; outline:3px solid var(--green);"><b style="color:var(--green);">SPEC-05</b><p style="font-size:16px;">Evaluación ⟵ ejemplo</p></div>
+        <div class="card tint" style="--bg:var(--green-soft); padding:12px 14px;"><b style="color:var(--green);">SPEC-06</b><p style="font-size:16px;">Historial y reintentos</p></div>
+        <div class="card tint" style="--bg:var(--yellow-soft); padding:12px 14px;"><b style="color:#a16207;">SPEC-07</b><p style="font-size:16px;">Soporte</p></div>
+        <div class="card tint" style="--bg:var(--yellow-soft); padding:12px 14px;"><b style="color:#a16207;">SPEC-08</b><p style="font-size:16px;">Caché y rate limit</p></div>
+        <p style="grid-column:1/-1; font-size:16px; color:var(--muted); margin:6px 0 0;">Cada una tiene: objetivo, historia, <b>criterios de aceptación</b>, reglas, contrato de API, diseño, <b>tareas técnicas</b> y trazabilidad a pruebas.</p>
+      </div>
+      <div class="card accent" style="--c:var(--green);">
+        <h3>SPEC-05 · Criterios de aceptación (extracto)</h3>
+        <table class="t" style="font-size:18px; margin-top:6px;">
+          <tbody>
+            <tr><td class="nowrap"><b>CA-05.2</b></td><td>Si el cliente envía un puntaje, <b>se ignora</b>: lo calcula el servidor.</td></tr>
+            <tr><td class="nowrap"><b>CA-05.3</b></td><td>Reenviar una evaluación ya completada devuelve <b>el mismo resultado</b>.</td></tr>
+            <tr><td class="nowrap"><b>CA-05.4</b></td><td>Dos evaluaciones simultáneas: solo una evalúa, la otra recibe <b>409</b>.</td></tr>
+            <tr><td class="nowrap"><b>CA-05.5</b></td><td>Si la IA falla 3 veces: queda <b>FAILED</b> y se puede reintentar sin repetir la llamada.</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px; font-size:16px;">Cada criterio tiene su prueba en la <a href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/matriz-pruebas.md" target="_blank" rel="noopener">matriz criterio → prueba</a>.</p>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/tree/main/docs/specs" target="_blank" rel="noopener">docs/specs</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/specs/SPEC-05-evaluacion.md" target="_blank" rel="noopener">SPEC-05-evaluacion.md</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/matriz-pruebas.md" target="_blank" rel="noopener">matriz criterio → prueba</a></div>
+  </div>
+  <aside class="notes">Usamos desarrollo guiado por especificaciones: ocho specs, cada una con criterios de aceptación tipo dado-cuando-entonces y tareas técnicas. Como ejemplo, la evaluación: el puntaje lo calcula el servidor, es idempotente y soporta concurrencia. Cada criterio está enlazado a una prueba automatizada.</aside>
+</section>
+
+<!-- 7 · ACTIVIDAD 4: SWAGGER -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">4</span>Endpoints REST + OpenAPI</div>
+    <h2>API documentada con <em>Swagger</em></h2>
+    <div class="body cols-60" style="align-items:start;">
+      <div>
+        <div class="shot" style="max-width:600px;"><img src="img/swagger-practica.jpg" alt="Swagger: prospectos, sesiones y simulaciones"></div>
+        <div class="cap">Swagger en vivo: <a href="https://closer-api-f17b.onrender.com/api/docs" target="_blank" rel="noopener">closer-api-f17b.onrender.com/api/docs</a> · Especificación: <a href="https://closer-api-f17b.onrender.com/api/docs/openapi.json" target="_blank" rel="noopener">openapi.json</a></div>
+      </div>
+      <div style="display:grid; gap:12px;">
+        <div class="stat-row" style="grid-template-columns:1fr 1fr;">
+          <div class="stat"><div class="big" style="--c:var(--blue);">21</div><div class="label">operaciones REST en 16 rutas</div></div>
+          <div class="stat"><div class="big" style="--c:var(--violet);">6</div><div class="label">grupos: salud, identidad, prospectos, sesiones, simulaciones, asistente</div></div>
+        </div>
+        <ul class="clean" style="--c:var(--blue);">
+          <li><b>JWT de Supabase</b> obligatorio en cada ruta</li>
+          <li><b>DTO validados</b>: un dato inválido responde 400</li>
+          <li><b>Errores uniformes</b> y límites con <span class="mono">429</span></li>
+        </ul>
+        <pre class="code">{ <span class="k">"error"</span>: <span class="s2">"Simulación no encontrada"</span>,
+  <span class="k">"code"</span>: <span class="s2">"not_found"</span> }</pre>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/presentation/simulations.controller.ts" target="_blank" rel="noopener">simulations.controller.ts</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/presentation/practice.dto.ts" target="_blank" rel="noopener">practice.dto.ts</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/shared/presentation/domain-exception.filter.ts" target="_blank" rel="noopener">domain-exception.filter.ts</a></div>
+  </div>
+  <aside class="notes">Todos los endpoints están documentados con OpenAPI y Swagger. Son 21 operaciones agrupadas en seis secciones. Todas exigen el token de Supabase, validan la entrada y responden errores con el mismo formato. Si da tiempo, abrir el Swagger en vivo.</aside>
+</section>
+
+<!-- 8a · ACTIVIDAD 5a: BASE DE DATOS (1/2) · CÓMO SE USA -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">5</span>Comportamiento de la base de datos · 1/2</div>
+    <h2>¿Cómo usa Closer <em>la base de datos</em>?</h2>
+    <div class="body cols-40" style="align-items:start; gap:16px;">
+      <div style="display:grid; gap:14px;">
+        <div class="card" style="padding:16px 20px;">
+          <div style="display:flex; align-items:baseline; gap:14px;">
+            <div class="big" style="--c:var(--blue);">84<small>%</small></div>
+            <p style="font-size:18px;">de las peticiones son <b>lecturas</b>: panel, historial y biblioteca.</p>
+          </div>
+          <div class="split" role="img" aria-label="84 % lecturas, 16 % escrituras">
+            <div style="width:84%; background:var(--blue);">Lecturas · 316,758</div>
+            <div style="width:16%; background:var(--orange); justify-content:center;">16 %</div>
+          </div>
+          <p style="font-size:13.5px; color:var(--muted); margin-top:4px;">Prueba con 2,000 usuarios · 376,696 peticiones</p>
+        </div>
+        <div class="card" style="padding:14px 18px;">
+          <h3 style="font-size:20px;">Qué le pide el usuario a la BD</h3>
+          <table class="t tight" style="font-size:15px;">
+            <thead><tr><th>Operación</th><th>Frecuencia</th><th>Tipo</th></tr></thead>
+            <tbody>
+              <tr><td><b>Ver panel e historial</b></td><td>Al abrir la app</td><td><span class="chip" style="font-size:13px;">Lee</span></td></tr>
+              <tr><td><b>Revisar el onboarding</b></td><td>En cada navegación</td><td><span class="chip" style="font-size:13px;">Lee</span></td></tr>
+              <tr><td><b>Iniciar una práctica</b></td><td>Varias por sesión</td><td><span class="chip" style="font-size:13px; --bg:var(--orange-soft); --c:var(--orange);">Escribe</span></td></tr>
+              <tr><td><b>Evaluar una llamada</b></td><td>1 por práctica</td><td><span class="chip" style="font-size:13px; --bg:var(--orange-soft); --c:var(--orange);">Escribe</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:grid; gap:12px;">
+        <div class="card" style="padding:14px 18px;">
+          <h3 style="font-size:20px;">Qué guardamos <span style="font-weight:500; color:var(--muted); font-size:16px;">· PostgreSQL en Supabase</span></h3>
+          <div class="er" style="margin-top:8px;">
+            <div class="box" style="--bg:var(--violet-soft); --c:var(--violet); grid-row:1 / span 3; align-self:center;">Usuario<small>users</small></div>
+            <div class="ar" style="grid-row:1 / span 3; align-self:center; font-size:15px; line-height:1.9;">→<br>→<br>→</div>
+            <div class="box" style="--bg:var(--yellow-soft); --c:#a16207;">Onboarding<small>1 por usuario</small></div>
+            <div></div><div></div>
+            <div class="box" style="--bg:var(--cyan-soft); --c:var(--cyan);">Prospectos<small>biblioteca</small></div>
+            <div></div><div></div>
+            <div class="box" style="--bg:var(--blue-soft); --c:var(--blue);">Sesiones<small>practice_sessions</small></div>
+            <div class="ar">→</div>
+            <div class="box" style="--bg:var(--green-soft); --c:var(--green);">Intentos<small>simulations</small></div>
+          </div>
+        </div>
+        <div class="card accent" style="--c:var(--blue); padding:14px 18px;">
+          <h3 style="font-size:20px;">Índices: ir directo al dato</h3>
+          <p style="font-size:15.5px;">Como el índice de un libro: la BD va directo al dato sin leer toda la tabla.</p>
+          <div class="idx">
+            <span class="mono">(user_id, updated_at DESC)</span><span>“Últimas sesiones <b>de este usuario</b>”</span>
+            <span class="mono">(session_id, created_at)</span><span>“Intentos <b>de esta sesión</b>, en orden”</span>
+          </div>
+        </div>
+        <div class="card tint" style="--bg:var(--green-soft); padding:12px 18px;">
+          <p style="font-size:16px;"><b style="color:var(--green);">Conclusión:</b> casi todo es lectura, así que optimizamos para <b>leer rápido</b>: índices y <b>caché en Redis</b> (siguiente).</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Pruebas</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/prisma/schema.prisma" target="_blank" rel="noopener">schema.prisma</a><a class="gh data" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/resultados-k6-2000vus/resumen.md" target="_blank" rel="noopener">resumen k6 (84 %)</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/arquitectura/analisis-bd-cache.md" target="_blank" rel="noopener">análisis BD y caché</a></div>
+  </div>
+  <aside class="notes">Para analizar la base de datos, primero vimos cómo la usa la aplicación. En la prueba de carga, el 84 % de las peticiones fueron lecturas: abrir el panel, ver el historial o la biblioteca. Las escrituras son pocas: iniciar una práctica y guardar su evaluación. Lo que guardamos es sencillo: cada usuario tiene su onboarding, sus prospectos y sus sesiones, y cada sesión tiene sus intentos. Todas las consultas filtran por usuario, por eso los índices empiezan por user_id y siguen el orden en que se muestran los datos. Un índice es como el índice de un libro: la base va directo a las filas del usuario sin recorrer toda la tabla. Conclusión: como casi todo es lectura, optimizamos para leer rápido, con índices y, como veremos después, con caché.</aside>
+</section>
+
+<!-- 8b · ACTIVIDAD 5a: BASE DE DATOS (2/2) · BAJO CARGA -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">5</span>Comportamiento de la base de datos · 2/2</div>
+    <h2>¿Qué pasó con <em>2,000 usuarios</em> a la vez?</h2>
+    <div class="body" style="grid-template-rows:1fr auto; gap:12px; margin-bottom:70px;">
+      <div class="cols-3" style="display:grid; gap:14px;">
+        <div class="card accent pr" style="--c:var(--violet);">
+          <div class="hd"><span class="n">1</span><h3>Doble clic en “Evaluar”</h3></div>
+          <div class="row"><span class="tag tp">Problema</span><p>Dos peticiones evaluarían la misma llamada: la IA se pagaría dos veces.</p></div>
+          <div class="row"><span class="tag ts">Solución</span><p><b>Compare-and-set:</b> la fila solo cambia si sigue en el estado esperado.</p></div>
+          <div class="viz">
+            <div class="ln"><span class="pill">Petición A</span>→ <b style="color:var(--green);">✓ pasa a EVALUATING</b></div>
+            <div class="ln"><span class="pill">Petición B</span>→ <b style="color:var(--pink);">✗ 409 “ya se evalúa”</b></div>
+            <div class="mono" style="font-size:12px; color:var(--muted);">UPDATE … WHERE status = esperado</div>
+          </div>
+          <div class="res"><b>0</b><span>evaluaciones duplicadas en la prueba de concurrencia</span></div>
+        </div>
+        <div class="card accent pr" style="--c:var(--blue);">
+          <div class="hd"><span class="n">2</span><h3>Demasiadas conexiones</h3></div>
+          <div class="row"><span class="tag tp">Problema</span><p>Con 10 conexiones por réplica se agotó el pool: errores “sin conexión libre”.</p></div>
+          <div class="row"><span class="tag ts">Solución</span><p><b>PgBouncer</b> como recepcionista: hace la fila y reparte 40 conexiones reales.</p></div>
+          <div class="viz">
+            <div class="ln"><span class="pill">2,000 usuarios</span>→<span class="pill">3 réplicas API</span></div>
+            <div class="ln">→<span class="pill" style="border-color:var(--blue); color:var(--blue);">PgBouncer</span>→<span class="pill">PostgreSQL</span></div>
+          </div>
+          <div class="res"><b>41</b><span>conexiones reales a PostgreSQL (40 del pool + 1 del monitor)</span></div>
+        </div>
+        <div class="card accent pr" style="--c:var(--orange);">
+          <div class="hd"><span class="n">3</span><h3>Transacciones que vencían</h3></div>
+          <div class="row"><span class="tag tp">Problema</span><p>Guardar una evaluación escribe 3 filas; con carga pasaba de 5 s y se cancelaba.</p></div>
+          <div class="row"><span class="tag ts">Solución</span><p><b>Transacción en lote:</b> las 3 escrituras viajan juntas, todo o nada.</p></div>
+          <div class="viz">
+            <div class="ln"><span class="pill">intento</span><span class="pill">sesión</span><span class="pill">resultado</span></div>
+            <div class="mono" style="font-size:12px; color:var(--muted);">$transaction([…]) → 1 viaje</div>
+          </div>
+          <div class="res"><b>Todo o nada</b><span>ninguna evaluación queda a medias</span></div>
+        </div>
+      </div>
+      <div class="card tint limit" style="--bg:var(--orange-soft);">
+        <h3>¿Dónde está<br>el límite?</h3>
+        <p><b>80 %</b> de CPU en PostgreSQL en el pico: <b style="font-size:inherit;">es el cuello de botella</b>, no la API ni Redis.</p>
+        <p><b style="color:var(--green);">579 ms</b> p95 ✅ (umbral 1 s). Pero el <b>p99 llega a 12.6 s</b>: algunas peticiones esperan turno en el pool.</p>
+        <p><b>Siguiente paso:</b> más recursos para PostgreSQL y réplicas de lectura para el historial (ADR-009).</p>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Pruebas</span><a class="gh run" href="https://github.com/OscarCodev/closer-arquitectura/actions/runs/44959807408" target="_blank" rel="noopener">Run en Actions</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/infrastructure/prisma-practice.repository.ts" target="_blank" rel="noopener">compare-and-set</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/test/api.integration-spec.ts#L185" target="_blank" rel="noopener">test concurrencia</a><a class="gh data" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/resultados-k6-2000vus/resumen.md" target="_blank" rel="noopener">resumen.md</a><a class="gh data" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/resultados-k6-2000vus/monitor-postgres.csv" target="_blank" rel="noopener">monitor-postgres.csv</a><a class="gh data" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/resultados-k6-2000vus/monitor.csv" target="_blank" rel="noopener">monitor.csv</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/pruebas-carga.md" target="_blank" rel="noopener">pruebas-carga.md</a></div>
+  </div>
+  <aside class="notes">Luego probamos la base con 2,000 usuarios a la vez, y la carga destapó problemas reales. Uno: si el usuario hace doble clic en Evaluar, dos peticiones podrían evaluar la misma llamada y pagar la IA dos veces. Lo resolvimos con compare-and-set: el UPDATE solo cambia la fila si sigue en el estado esperado; la primera petición gana y la segunda recibe un 409. Dos: con 10 conexiones por réplica se agotaba el pool. Pusimos PgBouncer, que funciona como un recepcionista: hace la fila y reparte solo 40 conexiones reales; con 2,000 usuarios PostgreSQL vio 41, contando la del monitor. Tres: guardar una evaluación escribe tres filas; con carga, la transacción pasaba de 5 segundos y se cancelaba. La cambiamos por una transacción en lote: todo o nada en un solo viaje. Hubo un cuarto defecto, de red y no de la base: el keep-alive entre nginx y Node, que corregimos subiéndolo a 65 segundos. ¿Dónde está el límite? En PostgreSQL, al 80 % de CPU. El 95 % de las lecturas responde en menos de 0.6 segundos, pero el p99 llega a 12.6 segundos porque en el pico algunas peticiones esperan turno en el pool. El siguiente paso sería darle más recursos a la base y agregar réplicas de lectura. Además, RLS está activado en todas las tablas: solo el backend accede a los datos.</aside>
+</section>
+
+<!-- 9 · ACTIVIDAD 5b: CACHÉ -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">5</span>Estrategia de caché</div>
+    <h2>Cache-aside con <em>Redis</em></h2>
+    <div class="body cols-60" style="align-items:start;">
+      <div style="display:grid; gap:14px;">
+        <div class="steps">
+          <div class="step" style="--c:var(--blue); padding:14px;"><div class="n">1</div><h3 style="font-size:21px;">Buscar</h3><p style="font-size:16px;">¿Está en Redis? Responde al instante.</p></div>
+          <div class="step" style="--c:var(--violet); padding:14px;"><div class="n">2</div><h3 style="font-size:21px;">Cargar</h3><p style="font-size:16px;">Si no, lee PostgreSQL y guarda con un TTL.</p></div>
+          <div class="step" style="--c:var(--green); padding:14px;"><div class="n">3</div><h3 style="font-size:21px;">Invalidar</h3><p style="font-size:16px;">Cada escritura borra su clave al instante.</p></div>
+        </div>
+        <table class="t">
+          <thead><tr><th>Dato</th><th>TTL</th><th>Se invalida al…</th></tr></thead>
+          <tbody>
+            <tr><td><b>Onboarding</b></td><td class="nowrap">15 min</td><td>guardar el onboarding</td></tr>
+            <tr><td><b>Biblioteca de prospectos</b></td><td class="nowrap">5 min</td><td>crear, editar o borrar un prospecto</td></tr>
+            <tr><td><b>Historial de sesiones</b></td><td class="nowrap">2 min</td><td>evaluar, renombrar o borrar</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:16.5px; margin:0; color:var(--ink-2);"><b>No se cachea</b> el estado de la evaluación ni los tokens de voz: deben ser exactos. <b>Si Redis cae</b>, la app sigue funcionando contra PostgreSQL.</p>
+      </div>
+      <div class="card" style="text-align:center; display:grid; justify-items:center; gap:6px;">
+        <svg width="250" height="250" viewBox="0 0 250 250" role="img" aria-label="85.5 % de aciertos de caché">
+          <title>85.5 % de las lecturas salieron de Redis</title>
+          <circle cx="125" cy="125" r="98" fill="none" stroke="#e9edf5" stroke-width="30"/>
+          <circle cx="125" cy="125" r="98" fill="none" stroke="#059669" stroke-width="30" stroke-linecap="round"
+                  stroke-dasharray="526.5 615.8" transform="rotate(-90 125 125)"/>
+          <text x="125" y="124" text-anchor="middle" font-family="Poppins" font-weight="800" font-size="42" fill="#0f172a">85.5%</text>
+          <text x="125" y="156" text-anchor="middle" font-family="Poppins" font-size="15" fill="#64748b">aciertos de caché</text>
+        </svg>
+        <p style="font-size:18px;"><b>≈ 255,000 lecturas</b> no tocaron PostgreSQL durante la prueba con 2,000 usuarios.</p>
+        <p style="font-size:15px; color:var(--muted);">Medido en <span class="mono">GET /api/v1/health/metrics</span> de cada réplica: 85.6 %, 85.5 % y 85.4 %.</p>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/shared/infrastructure/cache/redis-cache.adapter.ts" target="_blank" rel="noopener">redis-cache.adapter.ts</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/application/sessions.use-cases.ts" target="_blank" rel="noopener">sessions.use-cases.ts</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/arquitectura/ADR-008-cache-redis.md" target="_blank" rel="noopener">ADR-008</a></div>
+  </div>
+  <aside class="notes">La estrategia es cache-aside: primero se busca en Redis; si no está, se lee de la base y se guarda con un tiempo de vida. Cada escritura invalida su clave para que el usuario vea el cambio al instante. Resultado medido: 85.5 % de las lecturas salieron de Redis. Lo que exige exactitud, como el estado de la evaluación, no se cachea a propósito.</aside>
+</section>
+
+<!-- 10 · ACTIVIDAD 6: SOLID Y PATRONES -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">6</span>SOLID y patrones de diseño</div>
+    <h2>Principios aplicados <em>en el código real</em></h2>
+    <div class="body cols-60" style="align-items:start;">
+      <div style="display:grid; gap:9px;">
+        <div class="card accent" style="--c:var(--blue); padding:12px 16px;"><h3 style="font-size:20px; margin:0;">S · Responsabilidad única</h3><p style="font-size:16px;">Controlador traduce HTTP · caso de uso coordina · <span class="mono">scoring.ts</span> calcula · adaptador habla con Gemini.</p></div>
+        <div class="card accent" style="--c:var(--violet); padding:12px 16px;"><h3 style="font-size:20px; margin:0;">O · Abierto/cerrado</h3><p style="font-size:16px;">Un nuevo proveedor de IA = una nueva clase que implementa <span class="mono">ConversationAiPort</span>.</p></div>
+        <div class="card accent" style="--c:var(--green); padding:12px 16px;"><h3 style="font-size:20px; margin:0;">L · Sustitución de Liskov</h3><p style="font-size:16px;">Adaptadores falsos y reales cumplen el mismo contrato: los casos de uso pasan con ambos.</p></div>
+        <div class="card accent" style="--c:var(--orange); padding:12px 16px;"><h3 style="font-size:20px; margin:0;">I · Segregación de interfaces</h3><p style="font-size:16px;">Puertos pequeños: texto, voz, caché y límites por separado.</p></div>
+        <div class="card accent" style="--c:var(--pink); padding:12px 16px;"><h3 style="font-size:20px; margin:0;">D · Inversión de dependencias</h3><p style="font-size:16px;">Los casos de uso reciben puertos inyectados; <b>ESLint</b> impide importar infraestructura.</p></div>
+      </div>
+      <div style="display:grid; gap:12px;">
+        <pre class="code" style="font-size:14.5px;"><span class="c">// application/ports.ts</span>
+<span class="k">export interface</span> <span class="f">ConversationAiPort</span> {
+  evaluate(params): Promise&lt;AiEvaluation&gt;
+}
+<span class="c">// practice.module.ts: se elige por configuración</span>
+useFactory: (config) =&gt; config.get(<span class="s2">'AI_PROVIDER'</span>) === <span class="s2">'gemini'</span>
+  ? <span class="k">new</span> <span class="f">GeminiConversationAiAdapter</span>(config)
+  : <span class="k">new</span> <span class="f">FakeConversationAiAdapter</span>()</pre>
+        <div class="card" style="padding:14px 16px;">
+          <h3 style="font-size:20px;">Patrones presentes</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
+            <span class="chip">Adapter</span><span class="chip">Repository</span><span class="chip">Factory</span><span class="chip">Strategy</span>
+            <span class="chip ok">Cache-aside</span><span class="chip ok">Compare-and-set</span><span class="chip ok">Decorator + Guard</span><span class="chip ok">Fakes de prueba</span>
+          </div>
+        </div>
+        <div class="card tint" style="--bg:var(--yellow-soft); padding:12px 16px;"><p style="font-size:16px;"><b>Prueba real:</b> cuando Google retiró el modelo <span class="mono">gemini-2.5-flash-lite</span>, solo cambió una variable de configuración. Ni el dominio ni los casos de uso se tocaron.</p></div>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/application/ports.ts" target="_blank" rel="noopener">ports.ts</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/practice.module.ts" target="_blank" rel="noopener">practice.module.ts</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/03-dise%C3%B1o-de-software/dise%C3%B1o-interno/principios-de-dise%C3%B1o.md" target="_blank" rel="noopener">SOLID en el código</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/03-dise%C3%B1o-de-software/dise%C3%B1o-interno/patrones-de-dise%C3%B1o.md" target="_blank" rel="noopener">patrones</a></div>
+  </div>
+  <aside class="notes">Cada principio SOLID tiene un lugar concreto en el código. El mejor ejemplo es el puerto de IA: los casos de uso dependen de la interfaz y la implementación se elige por configuración. Esto se probó en la práctica: cuando Google retiró un modelo, bastó cambiar una variable.</aside>
+</section>
+
+<!-- 11 · ACTIVIDAD 7: JEST + CI -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">7</span>Pruebas automatizadas</div>
+    <h2>Jest + <em>GitHub Actions</em> en cada cambio</h2>
+    <div class="body" style="grid-template-columns:0.9fr 1fr 1.1fr; align-items:start;">
+      <div class="card">
+        <h3>150 pruebas</h3>
+        <div class="pyr" style="margin-top:12px;">
+          <div style="width:52%; background:var(--pink);">E2E <span>4</span></div>
+          <div style="width:76%; background:var(--violet);">Integración <span>19</span></div>
+          <div style="width:100%; background:var(--blue);">Unitarias <span>127</span></div>
+        </div>
+        <p style="font-size:15px; margin-top:12px;">Unitarias con dobles en memoria · integración con PostgreSQL y Redis reales · E2E con Playwright.</p>
+      </div>
+      <div class="card">
+        <h3>Cobertura del backend</h3>
+        <p style="font-size:14px; color:var(--muted); margin:0 0 14px;">Barra = cobertura · línea negra = umbral mínimo del CI</p>
+        <div class="meter"><div class="top"><span>Líneas</span><b>97.6 %</b></div><div class="track" title="Líneas: 97.6 % (umbral 80 %)"><div class="fill" style="width:97.6%; --c:var(--green);"></div><div class="goal" style="left:80%;" data-l="80 %"></div></div></div>
+        <div class="meter"><div class="top"><span>Sentencias</span><b>96.2 %</b></div><div class="track" title="Sentencias: 96.2 % (umbral 80 %)"><div class="fill" style="width:96.2%; --c:var(--green);"></div><div class="goal" style="left:80%;" data-l="80 %"></div></div></div>
+        <div class="meter"><div class="top"><span>Funciones</span><b>96.5 %</b></div><div class="track" title="Funciones: 96.5 % (umbral 75 %)"><div class="fill" style="width:96.5%; --c:var(--green);"></div><div class="goal" style="left:75%;" data-l="75 %"></div></div></div>
+        <div class="meter" style="margin-bottom:0;"><div class="top"><span>Ramas</span><b>74.5 %</b></div><div class="track" title="Ramas: 74.5 % (umbral 65 %)"><div class="fill" style="width:74.5%; --c:var(--green);"></div><div class="goal" style="left:65%;" data-l="65 %"></div></div></div>
+      </div>
+      <div>
+        <div class="shot"><img src="img/ci-ejecucion.jpg" alt="Ejecución del CI en GitHub Actions"></div>
+        <div class="cap">3 jobs en verde: API (lint, tipos, pruebas y cobertura), web y E2E · <a href="https://github.com/OscarCodev/closer-arquitectura/actions/workflows/ci.yml" target="_blank" rel="noopener">ver CI</a></div>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/src/modules/practice/application/evaluate-simulation.use-case.spec.ts" target="_blank" rel="noopener">unitarias</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/test/api.integration-spec.ts" target="_blank" rel="noopener">integración</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/web/e2e/closer.e2e.spec.ts" target="_blank" rel="noopener">E2E</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/apps/api/jest.coverage.config.js" target="_blank" rel="noopener">cobertura</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/.github/workflows/ci.yml" target="_blank" rel="noopener">ci.yml</a></div>
+  </div>
+  <aside class="notes">Tenemos 150 pruebas en tres niveles. La cobertura del backend supera todos los umbrales y el CI la exige: si baja, el pipeline falla. GitHub Actions corre lint, tipos, pruebas unitarias, de integración y E2E en cada push.</aside>
+</section>
+
+<!-- 12 · ACTIVIDAD 8: K6 -->
+<section>
+  <div class="s">
+    <div class="kicker"><span class="num">8</span>Atributos de calidad con k6</div>
+    <h2>Rampa progresiva hasta <em>2,000 usuarios</em></h2>
+    <div class="body cols-60" style="align-items:start;">
+      <div style="display:grid; gap:14px;">
+        <div class="stat-row">
+          <div class="stat"><div class="big" style="--c:var(--blue); font-size:38px;">2,000</div><div class="label">usuarios virtuales concurrentes</div></div>
+          <div class="stat"><div class="big" style="--c:var(--violet); font-size:38px;">376,696</div><div class="label">peticiones · 608 por segundo</div></div>
+          <div class="stat"><div class="big" style="--c:var(--green); font-size:38px;">0</div><div class="label">errores de gestión (316,758 peticiones)</div></div>
+          <div class="stat"><div class="big" style="--c:var(--orange); font-size:38px;">18,614</div><div class="label">prácticas completas evaluadas</div></div>
+        </div>
+        <div class="card">
+          <h3>Latencia p95 vs. umbral del Sprint 1 (EQ-03)</h3>
+          <p style="font-size:14px; color:var(--muted); margin:0 0 14px;">Barra = p95 medido · línea negra = umbral (100 %)</p>
+          <div class="meter"><div class="top"><span>Gestión (panel, historial, biblioteca)</span><b>579 ms <span style="font-size:15px; color:var(--muted); font-weight:500;">/ 1 s</span></b></div><div class="track" title="p95 de gestión: 579 ms de un umbral de 1,000 ms"><div class="fill" style="width:57.9%; --c:var(--blue);"></div><div class="goal" style="left:100%; left:calc(100% - 3px);" data-l="1 s"></div></div></div>
+          <div class="meter" style="margin-bottom:6px;"><div class="top"><span>Práctica (iniciar, coach, evaluar)</span><b>943 ms <span style="font-size:15px; color:var(--muted); font-weight:500;">/ 3 s</span></b></div><div class="track" title="p95 de práctica: 943 ms de un umbral de 3,000 ms"><div class="fill" style="width:31.4%; --c:var(--violet);"></div><div class="goal" style="left:calc(100% - 3px);" data-l="3 s"></div></div></div>
+          <p style="font-size:16px; margin-top:12px;"><span class="chip ok">5 de 5 umbrales cumplen</span> &nbsp;Los únicos errores (0.057 %) fueron respuestas 429 del límite de uso: la protección funcionando.</p>
+        </div>
+      </div>
+      <div>
+        <div class="shot"><img src="img/k6-ejecucion.jpg" alt="Ejecución de k6 en GitHub Actions"></div>
+        <div class="cap">Ejecución oficial en GitHub Actions · <a href="https://github.com/OscarCodev/closer-arquitectura/actions/runs/44959807408" target="_blank" rel="noopener">run #1 (12 min 59 s)</a></div>
+        <div class="card tint" style="--bg:var(--orange-soft); margin-top:12px; padding:14px 16px;">
+          <p style="font-size:16px;"><b>¿Dónde está el límite?</b> PostgreSQL al 80 % de CPU y el pool saturado en el pico. Redis solo al 13 %: la caché no es el cuello de botella.</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/infra/k6/carga.js" target="_blank" rel="noopener">infra/k6/carga.js</a><a class="gh code" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/.github/workflows/carga.yml" target="_blank" rel="noopener">carga.yml</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/pruebas-carga.md" target="_blank" rel="noopener">pruebas-carga.md</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/resultados-k6-2000vus/resumen.md" target="_blank" rel="noopener">resultados</a></div>
+  </div>
+  <aside class="notes">Simulamos una rampa progresiva hasta 2,000 usuarios concurrentes, como pide el sprint. Se ejecutó en un runner Linux de GitHub Actions. Las cinco métricas cumplen: la gestión responde en 579 ms en el percentil 95 con cero errores. Además identificamos dónde está el límite: la base de datos.</aside>
+</section>
+
+<!-- 13 · ¿RESPONDE A LOS ATRIBUTOS? -->
+<section>
+  <div class="s">
+    <div class="kicker">Criterio fundamental</div>
+    <h2>¿Cumple los <em>atributos de calidad</em>?</h2>
+    <p class="lead">Cada escenario del Sprint 1 tiene una prueba que lo respalda.</p>
+    <div class="body eq" style="align-content:start;">
+      <div class="card accent" style="--c:var(--green);"><span class="chip ok">Cumple</span><h3 style="margin-top:8px;">EQ-03 Escalabilidad</h3><p>2,000 usuarios: p95 579 ms y 0 errores de gestión (k6).</p></div>
+      <div class="card accent" style="--c:var(--green);"><span class="chip ok">Cumple</span><h3 style="margin-top:8px;">EQ-04 Seguridad</h3><p>Otro usuario recibe 404 en datos ajenos; el dueño sale del JWT (integración).</p></div>
+      <div class="card accent" style="--c:var(--green);"><span class="chip ok">Cumple</span><h3 style="margin-top:8px;">EQ-05 Mantenibilidad</h3><p>ESLint impide romper capas; IA sustituible por configuración (unitarias).</p></div>
+      <div class="card accent" style="--c:var(--green);"><span class="chip ok">Cumple</span><h3 style="margin-top:8px;">EQ-07 Interoperabilidad</h3><p>Fallos de la IA → FAILED con reintento, sin inventar feedback (unitarias).</p></div>
+      <div class="card accent" style="--c:var(--blue);"><span class="chip">Próximo sprint</span><h3 style="margin-top:8px;">EQ-02 Disponibilidad</h3><p>Ya: si la IA cae, el historial sigue. Sprint 3: monitor de uptime 30 días (meta 99.5 %).</p></div>
+      <div class="card accent" style="--c:var(--blue);"><span class="chip">Próximo sprint</span><h3 style="margin-top:8px;">EQ-01 Rendimiento de voz</h3><p>Ya: WSS directo a la IA. Sprint 3: medir latencia de respuesta con micrófono real.</p></div>
+      <div class="card accent" style="--c:var(--blue);"><span class="chip">Próximo sprint</span><h3 style="margin-top:8px;">EQ-06 Usabilidad</h3><p>Ya: flujo completo cubierto por E2E. Sprint 3: prueba con usuarios reales (cuestionario SUS).</p></div>
+      <div class="card tint" style="--bg:var(--blue-soft);"><div class="big" style="--c:var(--blue); font-size:56px;">4/7</div><p style="margin-top:6px;">cumplen hoy con evidencia automática; los otros 3 ya tienen base y se miden en el Sprint 3.</p></div>
+    </div>
+    <div class="foot gh-row"><span class="gh-label">Ver en GitHub</span><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/01-analisis-de-sistema/08-escenarios-atributos-calidad.md" target="_blank" rel="noopener">escenarios de calidad</a><a class="gh doc" href="https://github.com/OscarCodev/closer-arquitectura/blob/main/docs/pruebas/matriz-pruebas.md" target="_blank" rel="noopener">matriz de pruebas</a></div>
+  </div>
+  <aside class="notes">Esta diapositiva responde el criterio fundamental. Cuatro atributos cumplen hoy con evidencia automatizada: escalabilidad, seguridad, mantenibilidad e interoperabilidad. Los otros tres ya tienen la base en la arquitectura, pero necesitan medirse en condiciones reales, así que los planificamos para el Sprint 3: disponibilidad con un monitor de uptime durante un mes, voz midiendo la latencia con micrófono real, y usabilidad con usuarios reales y el cuestionario SUS.</aside>
+</section>
+
+<!-- 14 · DEMO -->
+<section>
+  <div class="s">
+    <div class="kicker">Primera versión funcional</div>
+    <h2><em>Demo</em> en vivo</h2>
+    <div class="body cols-3" style="align-items:start; flex:0 0 auto; margin-bottom:22px;">
+      <div><div class="shot"><img src="img/app-login.jpg" alt="Inicio de sesión con enlace por correo"></div><div class="cap"><b>1.</b> Acceso con enlace mágico por correo</div></div>
+      <div><div class="shot"><img src="img/app-preparacion.jpg" alt="Preparación de la venta"></div><div class="cap"><b>2.</b> Preparación: contexto y perfil del prospecto</div></div>
+      <div><div class="shot"><img src="img/app-resultado.jpg" alt="Resultado de una práctica con 81 puntos"></div><div class="cap"><b>3.</b> Resultado: 81/100, calculado en el servidor</div></div>
+    </div>
+    <div class="card tint" style="--bg:var(--blue-soft); display:flex; justify-content:space-between; align-items:center; gap:18px; padding:16px 22px;">
+      <p style="font-size:19px;"><b>Flujo:</b> iniciar sesión → onboarding → preparar → llamada de voz → evaluación → historial</p>
+      <a href="https://closer-arquitectura.vercel.app" style="font-size:19px; font-weight:700; white-space:nowrap;" target="_blank" rel="noopener">Abrir Closer →</a>
+    </div>
+  </div>
+  <aside class="notes">Abrir la app en vivo (entrar antes con la sesión iniciada). Mostrar: preparar un escenario, hacer una llamada corta por voz, colgar y ver la evaluación. Si falla la red, usar estas capturas como respaldo.</aside>
+</section>
+
+<!-- 15 · CIERRE Y ENLACES -->
+<section data-background-gradient="linear-gradient(160deg, #ffffff 0%, #f3f8ff 55%, #e6f3ff 100%)">
+  <div class="s cover" style="padding:44px 64px 40px;">
+    <div class="orb" style="width:470px; height:470px; right:-280px; top:-300px; background:radial-gradient(circle at 30% 30%, #7dd3fc 0%, #3b82f6 55%, #1d4ed8 100%); opacity:.9;"></div>
+    <div class="orb" style="width:300px; height:300px; left:-225px; bottom:-215px; background:radial-gradient(circle at 35% 30%, #bae6fd 0%, #38bdf8 55%, #2563eb 100%); opacity:.75;"></div>
+
+    <div style="position:relative; max-width:880px;">
+      <div class="kicker" style="color:#2563eb;">Conclusiones</div>
+      <h2 style="font-size:40px; color:#0b1736;">La implementación <span style="background:linear-gradient(90deg,#1d4ed8,#0ea5e9); -webkit-background-clip:text; background-clip:text; color:transparent;">respeta la arquitectura</span> y las pruebas lo demuestran</h2>
+    </div>
+    <div class="body cols-40" style="position:relative; align-items:start; margin-top:14px;">
+      <ul class="clean" style="--c:#2563eb;">
+        <li><b>Monolito modular + Clean Architecture</b> verificados por ESLint en el CI.</li>
+        <li><b>8 especificaciones</b> con criterios enlazados a 150 pruebas.</li>
+        <li><b>2,000 usuarios</b> sin errores de gestión: 85.5 % desde caché.</li>
+        <li><b>Evaluación idempotente</b> y puntaje calculado solo en el servidor.</li>
+      </ul>
+      <div class="links">
+        <div class="lnk" style="--c:var(--blue);"><i>App</i><div><b>Closer en vivo</b><a href="https://closer-arquitectura.vercel.app" target="_blank" rel="noopener">closer-arquitectura.vercel.app</a></div></div>
+        <div class="lnk" style="--c:var(--green);"><i>API</i><div><b>Swagger / OpenAPI</b><a href="https://closer-api-f17b.onrender.com/api/docs" target="_blank" rel="noopener">…onrender.com/api/docs</a></div></div>
+        <div class="lnk" style="--c:#24292f;"><i>Git</i><div><b>Repositorio</b><a href="https://github.com/OscarCodev/closer-arquitectura" target="_blank" rel="noopener">OscarCodev/closer-arquitectura</a></div></div>
+        <div class="lnk" style="--c:var(--violet);"><i>Doc</i><div><b>Documentación</b><a href="https://github.com/OscarCodev/closer-arquitectura/tree/main/docs" target="_blank" rel="noopener">carpeta docs/</a></div></div>
+        <div class="lnk" style="--c:var(--pink);"><i>CI</i><div><b>CI en GitHub Actions</b><a href="https://github.com/OscarCodev/closer-arquitectura/actions/workflows/ci.yml" target="_blank" rel="noopener">workflows/ci.yml</a></div></div>
+        <div class="lnk" style="--c:var(--orange);"><i>k6</i><div><b>Prueba de carga</b><a href="https://github.com/OscarCodev/closer-arquitectura/actions/runs/44959807408" target="_blank" rel="noopener">ejecución con 2,000 usuarios</a></div></div>
+      </div>
+    </div>
+    <div style="position:relative; display:flex; justify-content:space-between; align-items:center; font-size:16px; color:#475569; margin-top:8px;">
+      <span style="margin-left:24px;">Oscar Abel Bautista Ayala · Ing. Lizbeth Jaico Quispe · IS-488 · 2026-II</span>
+      <span style="font-size:30px; font-weight:800; margin-right:90px; background:linear-gradient(90deg,#1d4ed8,#0ea5e9); -webkit-background-clip:text; background-clip:text; color:transparent;">¡Gracias!</span>
+    </div>
+  </div>
+  <aside class="notes">Cerrar con la idea principal: lo documentado en el Sprint 1 está en el código y las pruebas lo demuestran. Repasar los cuatro logros y dejar los enlaces visibles durante las preguntas.</aside>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+<script>
+  // El ancho lógico se adapta a la proporción de la pantalla: así la presentación
+  // ocupa todo el ancho y alto, sin franjas, en monitores 16:9, 16:10 o 3:2.
+  const HEIGHT = 720
+  const fitWidth = () => Math.round(Math.min(1500, Math.max(1120, HEIGHT * window.innerWidth / window.innerHeight)))
+
+  Reveal.initialize({
+    width: fitWidth(),
+    height: HEIGHT,
+    margin: 0,
+    center: false,
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    backgroundTransition: 'fade',
+    plugins: [RevealNotes],
+  })
+
+  window.addEventListener('resize', () => {
+    const width = fitWidth()
+    if (width !== Reveal.getConfig().width) Reveal.configure({ width })
+  })
+</script>
+</body>
+</html>

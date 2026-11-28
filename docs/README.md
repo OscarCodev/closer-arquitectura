@@ -67,3 +67,5 @@ node docs/img/fuentes-svg/exportar-png.cjs   # requiere sharp (incluido en node_
 Colores: azul para presentación, verde para aplicación y negocio, ámbar para dominio y datos, violeta para infraestructura y rosa para servicios externos.
 
 Presentación del Sprint 1: [presentacion-sprint-1.pdf](presentacion-sprint-1.pdf).
+
+Presentación del Sprint 2: [PDF](presentacion-sprint-2/Closer%20-%20Sprint%202.pdf) · [versión HTML con notas del orador](presentacion-sprint-2/index.html) (reveal.js; abrir `index.html` en el navegador, `S` muestra las notas).
